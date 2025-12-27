@@ -507,7 +507,7 @@ if parse_clicked and raw_input.strip():
                 st.session_state.status3_counters[home_team] += 1
                 st.session_state.status3_counters[away_team] += 1
 
-            # Create strings EXACTLY like in your second code
+            # Create strings EXACTLY like in your second code - OPTION A FORMAT
             f_ne_4_ha_str = f"{home_team}: {st.session_state.ha_counters[home_team]} | {away_team}: {st.session_state.ha_counters[away_team]}"
             status3_str = f"{home_team}: {st.session_state.status3_counters[home_team]} | {away_team}: {st.session_state.status3_counters[away_team]}"
             
@@ -577,7 +577,7 @@ if parse_clicked and raw_input.strip():
                 st.session_state.status3_counters[home_team],
                 st.session_state.status3_counters[away_team],
                 f_ne_4_ha_str,  # F!=4HA at index 20
-                status3_str,  # Status3 at index 21 (THIS IS WHAT YOU WANT)
+                status3_str,  # Status3 at index 21 (THIS IS WHAT YOU WANT - OPTION A FORMAT)
                 st.session_state.season_number,
                 f"Season {st.session_state.season_number}"
             ])
@@ -692,7 +692,7 @@ if len(st.session_state.match_data) > 0:
         
         st.markdown("</div>", unsafe_allow_html=True)
         
-        # ============ STATUS3 OUTPUT - EXACTLY WHAT YOU WANT ============
+        # ============ STATUS3 OUTPUT - OPTION A FORMAT ============
         st.subheader("📊 Status3 Summary")
         
         st.markdown("""
@@ -702,11 +702,11 @@ if len(st.session_state.match_data) > 0:
         # Get the last 15 matches for Status3 display
         recent_matches_for_status3 = st.session_state.match_data[-15:] if len(st.session_state.match_data) > 0 else []
         
-        # Display Status3 EXACTLY like you showed me: "Team1: X | Team2: Y"
+        # Display Status3 in OPTION A FORMAT: "Team1: X | Team2: Y"
         for match in recent_matches_for_status3[::-1]:  # Reverse to show newest first
             if len(match) > 21:  # Check if Status3 data exists at index 21
                 status3_string = match[21]  # Status3 is at index 21
-                # Display it exactly as stored: "Team1: X | Team2: Y"
+                # Display it exactly as stored: "Team1: X | Team2: Y" - OPTION A FORMAT
                 st.markdown(
                     f"<div style='font-size:14px; margin-bottom:5px;'>{status3_string}</div>", 
                     unsafe_allow_html=True
@@ -1037,7 +1037,7 @@ else:
 st.markdown("---")
 st.markdown(
     f"<div style='text-align: center; color: #666; font-size: 0.9em;'>"
-    f"⚽ Football Analytics Dashboard • Season {st.session_state.season_number} • Status3 Display Working"
+    f"⚽ Football Analytics Dashboard • Season {st.session_state.season_number} • Status3 Display: Team Counters Format"
     f"</div>",
     unsafe_allow_html=True
 )
