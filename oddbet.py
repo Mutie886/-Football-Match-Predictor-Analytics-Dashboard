@@ -84,107 +84,52 @@ def get_team_position(team_name):
             return pos
     return None
 
-def calculate_team_metrics():
-    """Calculate detailed metrics for each team"""
-    metrics = {}
-    
-    for team in VALID_TEAMS:
-        stats = st.session_state.team_stats[team]
-        
-        total_matches = stats["P"]
-        win_rate = (stats["W"] / total_matches * 100) if total_matches > 0 else 0
-        draw_rate = (stats["D"] / total_matches * 100) if total_matches > 0 else 0
-        loss_rate = (stats["L"] / total_matches * 100) if total_matches > 0 else 0
-        
-        avg_gf = stats["GF"] / total_matches if total_matches > 0 else 0
-        avg_ga = stats["GA"] / total_matches if total_matches > 0 else 0
-        
-        # Calculate actual Both Teams Scored rate from match data
-        bts_matches = 0
-        for match in st.session_state.match_data:
-            # Check if this team was involved and both teams scored
-            if (match[1] == team and match[2] > 0 and match[3] > 0) or \
-               (match[4] == team and match[2] > 0 and match[3] > 0):
-                bts_matches += 1
-        
-        bts_rate = (bts_matches / total_matches * 100) if total_matches > 0 else 0
-        
-        metrics[team] = {
-            "win_rate": round(win_rate, 1),
-            "draw_rate": round(draw_rate, 1),
-            "loss_rate": round(loss_rate, 1),
-            "avg_gf": round(avg_gf, 2),
-            "avg_ga": round(avg_ga, 2),
-            "bts_rate": round(bts_rate, 1),
-            "form": stats["Form"][-5:] if len(stats["Form"]) >= 5 else stats["Form"],
-            "points_per_game": round(stats["Pts"] / total_matches, 2) if total_matches > 0 else 0,
-        }
-    
-    return metrics
-
-# ============ FIXED PARSING FUNCTION ============
+# ============ SIMPLE PARSING FUNCTION ============
 def parse_matches(text: str):
-    """Robust parsing function that handles various input formats"""
+    """Simple parsing function - like your second code"""
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     matches, errors = [], []
     
-    i = 0
-    while i < len(lines):
-        # Try to find a valid match starting from position i
-        found_match = False
+    for i in range(0, len(lines), 4):
+        chunk = lines[i:i+4]
+        if len(chunk) < 4:
+            errors.append(f"Incomplete group at lines {i+1}-{i+len(chunk)}")
+            continue
         
-        # Look ahead up to 10 lines to find a valid match pattern
-        for look_ahead in range(min(10, len(lines) - i)):
-            # Check if we have a potential match pattern: Team, Score, Score, Team
-            if i + look_ahead + 3 < len(lines):
-                potential_home = lines[i + look_ahead]
-                potential_home_score = lines[i + look_ahead + 1]
-                potential_away_score = lines[i + look_ahead + 2]
-                potential_away = lines[i + look_ahead + 3]
-                
-                # Check if this looks like a valid match
-                is_home_team = potential_home in VALID_TEAMS
-                is_away_team = potential_away in VALID_TEAMS
-                is_home_score = potential_home_score.isdigit() and 0 <= int(potential_home_score) <= 20
-                is_away_score = potential_away_score.isdigit() and 0 <= int(potential_away_score) <= 20
-                
-                if is_home_team and is_away_team and is_home_score and is_away_score:
-                    # Found a valid match!
-                    matches.append([
-                        potential_home, 
-                        int(potential_home_score), 
-                        int(potential_away_score), 
-                        potential_away
-                    ])
-                    i += look_ahead + 4  # Skip past this match
-                    found_match = True
-                    break
+        home_team, home_score_raw, away_score_raw, away_team = chunk
         
-        if not found_match:
-            # Skip this line and continue
-            i += 1
+        if home_team not in VALID_TEAMS: 
+            errors.append(f"Invalid home team: {home_team}")
+        if away_team not in VALID_TEAMS: 
+            errors.append(f"Invalid away team: {away_team}")
+        if not home_score_raw.isdigit(): 
+            errors.append(f"Non-numeric home score: {home_score_raw}")
+        if not away_score_raw.isdigit(): 
+            errors.append(f"Non-numeric away score: {away_score_raw}")
+        
+        if errors:
+            continue
+            
+        matches.append([
+            home_team, 
+            int(home_score_raw), 
+            int(away_score_raw), 
+            away_team
+        ])
     
     # Reverse order so bottom match is processed first
     matches.reverse()
-    
-    if not matches and text.strip():
-        errors.append("No valid matches found. Please check format: Home Team, Home Score, Away Score, Away Team")
     
     return matches, errors
 
 # ============ MAIN DASHBOARD LAYOUT ============
 
-# Top section: Data Input
-st.header("📥 Data Input & Processing")
-col1, col2 = st.columns([2, 1])
+# Two equal columns
+col1, col2 = st.columns([1, 1])
 
 with col1:
-    raw_input = st.text_area(
-        "**Paste match data**", 
-        height=150,
-        placeholder="Home Team\nHome Score\nAway Score\nAway Team\n...\n\nExample:\nManchester Blue\n2\n1\nLiverpool\nLondon Reds\n0\n0\nEverton"
-    )
-    
+    raw_input = st.text_area("**Paste match data**", height=200,
+                             placeholder="Home Team\nHome Score\nAway Score\nAway Team\n...\n\nExample:\nManchester Blue\n2\n1\nLiverpool\nLondon Reds\n0\n0\nEverton")
     parse_clicked = st.button("🚀 Parse and Add Matches", type="primary", use_container_width=True)
 
 with col2:
@@ -226,7 +171,6 @@ if parse_clicked and raw_input.strip():
             check_and_reset_season()
         
         # Process each match
-        processed_count = 0
         for home_team, home_score, away_score, away_team in new_matches:
             # Double-check season reset for each match
             if st.session_state.team_stats[home_team]["P"] >= 38 or st.session_state.team_stats[away_team]["P"] >= 38:
@@ -245,7 +189,7 @@ if parse_clicked and raw_input.strip():
             else:
                 total_g_display = str(total_goals)
             
-            # Update counters (EXACTLY LIKE YOUR SECOND CODE)
+            # Update counters
             if total_goals == 4:
                 st.session_state.home_counters[home_team] = 0
                 st.session_state.away_counters[away_team] = 0
@@ -264,7 +208,7 @@ if parse_clicked and raw_input.strip():
                 st.session_state.status3_counters[home_team] += 1
                 st.session_state.status3_counters[away_team] += 1
 
-            # Create strings EXACTLY like in your second code - OPTION A FORMAT
+            # Create strings for display
             f_ne_4_ha_str = f"{home_team}: {st.session_state.ha_counters[home_team]} | {away_team}: {st.session_state.ha_counters[away_team]}"
             status3_str = f"{home_team}: {st.session_state.status3_counters[home_team]} | {away_team}: {st.session_state.status3_counters[away_team]}"
             
@@ -319,7 +263,7 @@ if parse_clicked and raw_input.strip():
             home_rank = get_team_position(home_team)
             away_rank = get_team_position(away_team)
             
-            # Add match data with ALL the columns you need
+            # Add match data
             st.session_state.match_data.append([
                 match_id, home_team, home_score, away_score, away_team,
                 total_goals, total_g_display, result,
@@ -334,12 +278,10 @@ if parse_clicked and raw_input.strip():
                 st.session_state.status3_counters[home_team],
                 st.session_state.status3_counters[away_team],
                 f_ne_4_ha_str,  # F!=4HA at index 20
-                status3_str,  # Status3 at index 21 (THIS IS WHAT YOU WANT - OPTION A FORMAT)
+                status3_str,  # Status3 at index 21
                 st.session_state.season_number,
                 f"Season {st.session_state.season_number}"
             ])
-            
-            processed_count += 1
         
         st.success(f"✅ Added {len(new_matches)} new matches to Season {st.session_state.season_number}")
         st.rerun()
@@ -347,7 +289,7 @@ if parse_clicked and raw_input.strip():
         st.warning("⚠️ No valid matches found in the input")
 
 # ============ DISPLAY SECTIONS ============
-if len(st.session_state.match_data) > 0:
+if st.session_state.match_data:
     column_names = [
         "Match_ID", "Home_Team", "Home_Score", "Away_Score", "Away_Team",
         "Total_Goals", "Total-G", "Match_Result", "Goal_Difference", 
@@ -360,11 +302,10 @@ if len(st.session_state.match_data) > 0:
     
     df = pd.DataFrame(st.session_state.match_data, columns=column_names)
     
-    # Create three main columns for the dashboard
     st.markdown("---")
     st.header(f"📊 Season {st.session_state.season_number} Dashboard")
     
-    # Row 1: League Table and Recent Matches
+    # Create two columns for display
     col_league, col_recent = st.columns([2, 1])
     
     with col_league:
@@ -386,29 +327,9 @@ if len(st.session_state.match_data) > 0:
         
         st.dataframe(league_df, use_container_width=True, height=500)
         
-        # Quick league insights
-        st.subheader("📈 League Insights")
-        insight_col1, insight_col2, insight_col3, insight_col4 = st.columns(4)
-        
-        with insight_col1:
-            if len(league_df) > 0:
-                best_attack = league_df.loc[league_df['GF'].idxmax()]
-                st.metric("Best Attack", best_attack['Team'], f"{best_attack['GF']} GF")
-        
-        with insight_col2:
-            if len(league_df) > 0:
-                best_defense = league_df.loc[league_df['GA'].idxmin()]
-                st.metric("Best Defense", best_defense['Team'], f"{best_defense['GA']} GA")
-        
-        with insight_col3:
-            if len(league_df) > 0:
-                best_gd = league_df.loc[league_df['GD'].idxmax()]
-                st.metric("Best GD", best_gd['Team'], f"+{best_gd['GD']}")
-        
-        with insight_col4:
-            if len(league_df) > 0:
-                top_scorer = league_df.loc[league_df['Pts'].idxmax()]
-                st.metric("League Leader", top_scorer['Team'], f"{top_scorer['Pts']} Pts")
+        # All match data table
+        st.subheader("📋 All Match Data")
+        st.dataframe(df.tail(20), use_container_width=True, height=300)
     
     with col_recent:
         st.subheader("🔄 Recent Match Summary")
@@ -425,8 +346,6 @@ if len(st.session_state.match_data) > 0:
             away = match[4]
             home_score = match[2]
             away_score = match[3]
-            home_rank = match[11] if len(match) > 11 else "?"
-            away_rank = match[12] if len(match) > 12 else "?"
             
             # Color code based on result
             if home_score > away_score:
@@ -440,9 +359,9 @@ if len(st.session_state.match_data) > 0:
             
             st.markdown(
                 f"<div style='font-size:14px; margin-bottom:8px; padding:5px; border-bottom:1px solid #333;'>"
-                f"<span style='{home_style}'>{home_rank}. {home}</span> "
+                f"<span style='{home_style}'>{home}</span> "
                 f"{home_score}-{away_score} "
-                f"<span style='{away_style}'>{away} ({away_rank}.)</span>"
+                f"<span style='{away_style}'>{away}</span>"
                 f"</div>", 
                 unsafe_allow_html=True
             )
