@@ -126,41 +126,129 @@ def calculate_team_metrics():
     return metrics
 
 def predict_match_outcome(home_team, away_team, team_metrics):
-    """Predict match outcome probabilities"""
+    """Predict match outcome probabilities with CORRECTED home advantage"""
     
     home_metrics = team_metrics[home_team]
     away_metrics = team_metrics[away_team]
     
-    # Base probabilities from win rates
-    home_win_prob = home_metrics["win_rate"] * (1 - away_metrics["win_rate"] / 100)
-    away_win_prob = away_metrics["win_rate"] * (1 - home_metrics["win_rate"] / 100)
-    draw_prob = (home_metrics["draw_rate"] + away_metrics["draw_rate"]) / 2
+    # ============ 1. CALCULATE BASE PROBABILITIES ============
+    # Use good formula for base probabilities
+    home_base_prob = home_metrics["win_rate"] * (1 - away_metrics["win_rate"] / 100)
+    away_base_prob = away_metrics["win_rate"] * (1 - home_metrics["win_rate"] / 100)
+    draw_base_prob = (home_metrics["draw_rate"] + away_metrics["draw_rate"]) / 2
     
-    # Adjust for home advantage
-    home_advantage = 15  # percentage points
-    home_win_prob += home_advantage
-    away_win_prob = max(0, away_win_prob - home_advantage * 0.5)
+    # ============ 2. SMART HOME ADVANTAGE (CORRECTED) ============
+    # Home advantage should depend on team strength difference
     
-    # Normalize to 100%
+    # Calculate strength difference
+    home_strength = home_metrics["points_per_game"]
+    away_strength = away_metrics["points_per_game"]
+    strength_diff = home_strength - away_strength
+    
+    # Dynamic home advantage based on situation:
+    # - Strong home team gets MORE home advantage
+    # - Weak home team gets LESS home advantage
+    
+    if strength_diff > 1.0:  # Home team is much stronger
+        home_advantage_multiplier = 1.25  # +25% boost
+        away_penalty = 0.85  # -15% penalty
+    elif strength_diff > 0.5:  # Home team is stronger
+        home_advantage_multiplier = 1.15  # +15% boost
+        away_penalty = 0.90  # -10% penalty
+    elif strength_diff > 0:  # Home team is slightly stronger
+        home_advantage_multiplier = 1.10  # +10% boost
+        away_penalty = 0.95  # -5% penalty
+    elif strength_diff > -0.5:  # Teams are evenly matched
+        home_advantage_multiplier = 1.08  # +8% boost
+        away_penalty = 0.92  # -8% penalty
+    elif strength_diff > -1.0:  # Away team is stronger
+        home_advantage_multiplier = 1.05  # +5% boost
+        away_penalty = 0.95  # -5% penalty
+    else:  # Away team is much stronger
+        home_advantage_multiplier = 1.02  # +2% boost (minimal home advantage)
+        away_penalty = 0.98  # -2% penalty
+    
+    # Apply smart home advantage
+    home_win_prob = home_base_prob * home_advantage_multiplier
+    away_win_prob = away_base_prob * away_penalty
+    
+    # Draw probability also adjusts based on team strength difference
+    # More evenly matched teams = higher draw probability
+    if abs(strength_diff) < 0.3:
+        draw_multiplier = 1.2  # +20% for evenly matched teams
+    elif abs(strength_diff) < 0.7:
+        draw_multiplier = 1.1  # +10%
+    else:
+        draw_multiplier = 0.9  # -10% for mismatched teams
+    
+    draw_prob = draw_base_prob * draw_multiplier
+    
+    # ============ 3. FORM ADJUSTMENT ============
+    # Add small form adjustment
+    form_impact = 0
+    home_form = home_metrics["form"]
+    away_form = away_metrics["form"]
+    
+    if home_form and away_form:
+        form_values = {"W": 1, "D": 0, "L": -1}
+        home_form_score = sum(form_values.get(r, 0) for r in home_form[-3:])  # Last 3 matches
+        away_form_score = sum(form_values.get(r, 0) for r in away_form[-3:])
+        form_impact = (home_form_score - away_form_score) * 2  # Small impact
+    
+    home_win_prob += form_impact
+    away_win_prob -= form_impact
+    
+    # ============ 4. NORMALIZE TO 100% ============
     total = home_win_prob + away_win_prob + draw_prob
     if total > 0:
         home_win_prob = (home_win_prob / total * 100)
         away_win_prob = (away_win_prob / total * 100)
         draw_prob = (draw_prob / total * 100)
     else:
-        home_win_prob = draw_prob = away_win_prob = 33.3
+        # Default if no data
+        home_win_prob = 40
+        away_win_prob = 30
+        draw_prob = 30
     
-    # Calculate over/under probabilities
+    # ============ 5. ENSURE REALISTIC RANGES ============
+    # But keep flexibility - don't over-constrain
+    home_win_prob = max(5, min(95, home_win_prob))
+    away_win_prob = max(5, min(95, away_win_prob))
+    draw_prob = max(5, min(95, draw_prob))
+    
+    # Re-normalize after constraints
+    total = home_win_prob + away_win_prob + draw_prob
+    if total > 0:
+        home_win_prob = (home_win_prob / total * 100)
+        away_win_prob = (away_win_prob / total * 100)
+        draw_prob = (draw_prob / total * 100)
+    
+    # ============ 6. GOAL PREDICTIONS ============
+    # Goal predictions also consider team strength
     total_goals_expected = home_metrics["avg_gf"] + away_metrics["avg_gf"]
     
-    over_2_5_prob = min(90, max(10, (total_goals_expected - 1.5) * 30))
-    over_3_5_prob = min(70, max(5, (total_goals_expected - 2.5) * 25))
-    over_4_5_prob = min(50, max(2, (total_goals_expected - 3.5) * 20))
+    # Adjust based on team strength
+    # Stronger teams tend to have higher scoring games
+    strength_factor = (home_strength + away_strength) / 2
+    if strength_factor > 1.8:
+        goals_multiplier = 1.2
+    elif strength_factor > 1.4:
+        goals_multiplier = 1.1
+    elif strength_factor < 1.0:
+        goals_multiplier = 0.9
+    else:
+        goals_multiplier = 1.0
+    
+    adjusted_goals = total_goals_expected * goals_multiplier
+    
+    over_2_5_prob = min(90, max(10, (adjusted_goals - 1.5) * 30))
+    over_3_5_prob = min(70, max(5, (adjusted_goals - 2.5) * 25))
+    over_4_5_prob = min(50, max(2, (adjusted_goals - 3.5) * 20))
     
     # Both teams score probability
     both_teams_score_prob = (home_metrics["bts_rate"] + away_metrics["bts_rate"]) / 2
     
-    # FIX: Ensure all probabilities are within 0-100 range
+    # Ensure all probabilities are within 0-100 range
     home_win_prob = max(0, min(100, home_win_prob))
     away_win_prob = max(0, min(100, away_win_prob))
     draw_prob = max(0, min(100, draw_prob))
@@ -177,8 +265,10 @@ def predict_match_outcome(home_team, away_team, team_metrics):
         "over_3_5": round(over_3_5_prob, 1),
         "over_4_5": round(over_4_5_prob, 1),
         "both_teams_score": round(both_teams_score_prob, 1),
-        "expected_goals": round(total_goals_expected, 2),
-        "predicted_score": f"{round(home_metrics['avg_gf'], 1)}-{round(away_metrics['avg_gf'], 1)}"
+        "expected_goals": round(adjusted_goals, 2),
+        "predicted_score": f"{round(home_metrics['avg_gf'] * goals_multiplier, 1)}-{round(away_metrics['avg_gf'] * goals_multiplier, 1)}",
+        "home_advantage_multiplier": round((home_advantage_multiplier - 1) * 100, 1),  # Show as percentage
+        "strength_difference": round(strength_diff, 2)
     }
 
 def create_head_to_head_stats(home_team, away_team):
@@ -652,6 +742,29 @@ if len(st.session_state.match_data) > 0:
         
         st.markdown("</div>", unsafe_allow_html=True)
         
+        # ============ STATUS3 OUTPUT (ADDED AS REQUESTED) ============
+        st.subheader("📊 Status3 Summary")
+        
+        st.markdown("""
+            <div style="background-color:black; color:white; padding:15px; border-radius:10px; border:2px solid #444;">
+        """, unsafe_allow_html=True)
+        
+        # Get the last 20 matches for Status3 display
+        recent_matches_for_status3 = st.session_state.match_data[-20:] if len(st.session_state.match_data) > 0 else []
+        
+        for match in recent_matches_for_status3[::-1]:
+            if len(match) > 21:  # Check if Status3 data exists
+                status3_string = match[21]
+                st.markdown(
+                    f"<div style='font-size:14px; margin-bottom:5px;'>{status3_string}</div>", 
+                    unsafe_allow_html=True
+                )
+        
+        if len(recent_matches_for_status3) == 0:
+            st.markdown("<div style='color:#888; text-align:center;'>No matches yet</div>", unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
         # Quick stats
         st.subheader("📋 Quick Stats")
         total_matches = len(st.session_state.match_data)
@@ -692,6 +805,19 @@ if len(st.session_state.match_data) > 0:
         team_metrics = calculate_team_metrics()
         predictions = predict_match_outcome(home_team, away_team, team_metrics)
         h2h_stats = create_head_to_head_stats(home_team, away_team)
+        
+        # Show prediction model info
+        with st.expander("🔍 **Prediction Details**", expanded=False):
+            col_detail1, col_detail2 = st.columns(2)
+            with col_detail1:
+                st.write(f"**Home Advantage Applied:** +{predictions['home_advantage_multiplier']}%")
+                st.write(f"**Strength Difference:** {predictions['strength_difference']}")
+                st.write(f"**Home PPG:** {team_metrics[home_team]['points_per_game']}")
+            
+            with col_detail2:
+                st.write(f"**Away PPG:** {team_metrics[away_team]['points_per_game']}")
+                st.write(f"**Home Win Rate:** {team_metrics[home_team]['win_rate']}%")
+                st.write(f"**Away Win Rate:** {team_metrics[away_team]['win_rate']}%")
         
         # Display predictions in columns
         st.subheader("📈 Match Predictions")
@@ -962,7 +1088,7 @@ else:
 st.markdown("---")
 st.markdown(
     "<div style='text-align: center; color: #666; font-size: 0.9em;'>"
-    f"⚽ Football Analytics Dashboard • Season {st.session_state.season_number} • Automatic 38-match season reset • All match data preserved"
+    f"⚽ Football Analytics Dashboard • Season {st.session_state.season_number} • Corrected Home Advantage • All match data preserved"
     "</div>",
     unsafe_allow_html=True
 )
