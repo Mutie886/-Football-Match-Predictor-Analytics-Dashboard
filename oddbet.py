@@ -1121,11 +1121,11 @@ else:
         ```
         """)
 
-# Footer
+# Footer - FIXED THE SYNTAX ERROR
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: #666; font-size: 0.9em;'>"
+    f"<div style='text-align: center; color: #666; font-size: 0.9em;'>"
     f"⚽ Football Analytics Dashboard • Season {st.session_state.season_number} • Status3 Display Fixed • All match data preserved"
-    "</div>",
+    f"</div>",
     unsafe_allow_html=True
 )
