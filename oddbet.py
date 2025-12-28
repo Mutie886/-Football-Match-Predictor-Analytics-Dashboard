@@ -415,21 +415,6 @@ if page == "Counter Logic Dashboard":
                 away = m[4] if len(m) > 4 else ""
                 s3_display = m[20] if len(m) > 20 else f"{home}: {st.session_state.status3_counters.get(home,0)} | {away}: {st.session_state.status3_counters.get(away,0)}"
                 st.markdown(f"**{home}** {home_score}-{away_score} **{away}** — {s3_display}")
-        
-        st.markdown("---")
-        st.subheader("Status3 Summary (Home team Status3 values for last 10 matches)")
-        
-        # For the same last_10_matches list, extract the home team's Status3 numeric value
-        status3_values = []
-        for m in last_10_matches:
-            if len(m) > 17:
-                status3_values.append(m[17])
-            else:
-                status3_values.append(0)
-        
-        # Print one value per line (newest first)
-        for val in status3_values:
-            st.write(val)
 
 # ============ MAIN DASHBOARD (EXACTLY YOUR CODE) ============
 else:
