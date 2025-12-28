@@ -2,6 +2,203 @@ import streamlit as st
 import pandas as pd
 import re
 
+# ============ CSS STYLING ============
+st.markdown("""
+<style>
+    /* Main background */
+    .main-background {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    
+    /* Custom containers */
+    .custom-container {
+        background-color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Headers */
+    .main-header {
+        text-align: center;
+        color: #1E3A8A;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid #3B82F6;
+        background: linear-gradient(90deg, #1E3A8A, #3B82F6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .section-header {
+        color: #1E3A8A;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 1.5rem 0 1rem 0;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(90deg, #1E3A8A, #3B82F6);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Metrics */
+    [data-testid="stMetricValue"] {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1E3A8A;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        font-size: 1.1rem;
+        color: #6B7280;
+        font-weight: 600;
+    }
+    
+    [data-testid="stMetricDelta"] {
+        font-size: 0.9rem;
+    }
+    
+    /* DataFrames */
+    .dataframe {
+        border-radius: 10px;
+        border: 1px solid #E5E7EB;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .dataframe th {
+        background: linear-gradient(90deg, #1E3A8A, #3B82F6);
+        color: white !important;
+        font-weight: 600;
+        padding: 14px !important;
+        text-align: left;
+    }
+    
+    .dataframe td {
+        padding: 12px !important;
+        border-bottom: 1px solid #E5E7EB;
+    }
+    
+    .dataframe tr:hover {
+        background-color: #F9FAFB;
+    }
+    
+    /* Progress bars */
+    .stProgress > div > div {
+        background: linear-gradient(90deg, #1E3A8A, #3B82F6);
+        border-radius: 10px;
+    }
+    
+    /* Text areas */
+    .stTextArea textarea {
+        border-radius: 10px;
+        border: 2px solid #E5E7EB;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+    }
+    
+    /* Select boxes */
+    .stSelectbox > div > div {
+        border-radius: 10px;
+    }
+    
+    /* Alerts */
+    .stAlert {
+        border-radius: 10px;
+        border: none;
+        padding: 20px;
+    }
+    
+    .stAlert.stSuccess {
+        background: linear-gradient(90deg, #10B981, #34D399);
+        color: white;
+    }
+    
+    .stAlert.stWarning {
+        background: linear-gradient(90deg, #F59E0B, #FBBF24);
+        color: white;
+    }
+    
+    .stAlert.stError {
+        background: linear-gradient(90deg, #EF4444, #F87171);
+        color: white;
+    }
+    
+    .stAlert.stInfo {
+        background: linear-gradient(90deg, #3B82F6, #60A5FA);
+        color: white;
+    }
+    
+    /* Sidebar */
+    .css-1d391kg {
+        background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 100%);
+    }
+    
+    /* Counter displays */
+    .counter-box {
+        background: #F9FAFB;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+        border-left: 5px solid #3B82F6;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+    }
+    
+    .counter-box strong {
+        color: #1E3A8A;
+        font-size: 16px;
+    }
+    
+    /* Recent matches display */
+    .match-row {
+        padding: 12px;
+        margin: 8px 0;
+        border-bottom: 1px solid #E5E7EB;
+        font-size: 14px;
+    }
+    
+    .match-row:last-child {
+        border-bottom: none;
+    }
+    
+    /* Footer */
+    .footer-text {
+        text-align: center;
+        color: #6B7280;
+        font-size: 0.9em;
+        padding: 20px;
+        margin-top: 30px;
+        border-top: 2px solid #E5E7EB;
+    }
+    
+    /* Divider */
+    .custom-divider {
+        height: 3px;
+        background: linear-gradient(90deg, #1E3A8A, #3B82F6);
+        border-radius: 10px;
+        margin: 30px 0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Allowed team names (case-sensitive)
 VALID_TEAMS = {
     "Leeds", "Aston V", "Manchester Blue", "Liverpool", "London Blues", "Everton",
@@ -374,18 +571,47 @@ def clean_and_parse_matches(text: str):
     return matches, errors, cleaned_lines
 
 # ============ SIDEBAR NAVIGATION ============
-page = st.sidebar.selectbox("Select page", ["Main Dashboard", "Counter Logic Dashboard"])
+st.sidebar.markdown("""
+<div style='padding: 20px; background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 100%); border-radius: 10px; color: white;'>
+<h3 style='color: white;'>🎯 Navigation</h3>
+</div>
+""", unsafe_allow_html=True)
+
+page = st.sidebar.selectbox("", ["Main Dashboard", "Counter Logic Dashboard"])
+
+st.sidebar.markdown("---")
+
+st.sidebar.markdown("""
+<div style='padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+<h4 style='color: #1E3A8A;'>📊 Quick Stats</h4>
+""", unsafe_allow_html=True)
+
+if len(st.session_state.match_data) > 0:
+    current_season_matches = [m for m in st.session_state.match_data if m[-2] == st.session_state.season_number]
+    st.sidebar.metric("Current Season", f"Season {st.session_state.season_number}")
+    st.sidebar.metric("Matches This Season", len(current_season_matches))
+    st.sidebar.metric("Total Matches", len(st.session_state.match_data))
+else:
+    st.sidebar.info("No matches yet")
+
+st.sidebar.markdown("</div>", unsafe_allow_html=True)
 
 # ============ COUNTER LOGIC DASHBOARD ============
 if page == "Counter Logic Dashboard":
-    st.title("🧮 Counter Logic Dashboard — FI=4HA & Status3 (Last 10 Matches)")
+    # Main container
+    st.markdown("<div class='custom-container'>", unsafe_allow_html=True)
     
-    st.markdown(
-        """
-        This view shows the **FI=4HA** and **Status3** outputs for the **last 10 matches**.
-        Shows most recent matches first.
-        """
-    )
+    st.markdown("<h1 class='main-header'>Counter Logic Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 class='section-header'>FI=4HA & Status3 (Last 10 Matches)</h3>", unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style='background: #F9FAFB; padding: 20px; border-radius: 10px; margin-bottom: 25px;'>
+    <p style='font-size: 16px; color: #4B5563;'>
+    This view shows the <strong>FI=4HA</strong> and <strong>Status3</strong> outputs for the <strong>last 10 matches</strong>.<br>
+    Shows most recent matches first.
+    </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     if len(st.session_state.match_data) == 0:
         st.info("No matches available yet. Add matches from the Main Dashboard to populate these counters.")
@@ -397,33 +623,47 @@ if page == "Counter Logic Dashboard":
         left_col, right_col = st.columns(2)
         
         with left_col:
-            st.subheader("FI=4HA (Last 10 Matches)")
+            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.4rem; margin-bottom: 15px;'>📊 FI=4HA (Last 10 Matches)</h4>", unsafe_allow_html=True)
             for m in last_10_matches:
                 home = m[1] if len(m) > 1 else ""
                 home_score = m[2] if len(m) > 2 else ""
                 away_score = m[3] if len(m) > 3 else ""
                 away = m[4] if len(m) > 4 else ""
                 fi_display = m[19] if len(m) > 19 else f"{home}: {st.session_state.ha_counters.get(home,0)} | {away}: {st.session_state.ha_counters.get(away,0)}"
-                st.markdown(f"**{home}** {home_score}-{away_score} **{away}** — {fi_display}")
+                st.markdown(f"""
+                <div class='counter-box'>
+                <strong>{home}</strong> {home_score}-{away_score} <strong>{away}</strong><br>
+                <small>{fi_display}</small>
+                </div>
+                """, unsafe_allow_html=True)
         
         with right_col:
-            st.subheader("Status3 (Last 10 Matches)")
+            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.4rem; margin-bottom: 15px;'>📈 Status3 (Last 10 Matches)</h4>", unsafe_allow_html=True)
             for m in last_10_matches:
                 home = m[1] if len(m) > 1 else ""
                 home_score = m[2] if len(m) > 2 else ""
                 away_score = m[3] if len(m) > 3 else ""
                 away = m[4] if len(m) > 4 else ""
                 s3_display = m[20] if len(m) > 20 else f"{home}: {st.session_state.status3_counters.get(home,0)} | {away}: {st.session_state.status3_counters.get(away,0)}"
-                st.markdown(f"**{home}** {home_score}-{away_score} **{away}** — {s3_display}")
+                st.markdown(f"""
+                <div class='counter-box'>
+                <strong>{home}</strong> {home_score}-{away_score} <strong>{away}</strong><br>
+                <small>{s3_display}</small>
+                </div>
+                """, unsafe_allow_html=True)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# ============ MAIN DASHBOARD (EXACTLY YOUR CODE) ============
+# ============ MAIN DASHBOARD ============
 else:
-    st.title("⚽ Complete Football Analytics Dashboard")
-
-    # ============ MAIN DASHBOARD LAYOUT ============
-
-    # Top section: Data Input
-    st.header("📥 Data Input & Processing")
+    # Main container
+    st.markdown("<div class='custom-container'>", unsafe_allow_html=True)
+    
+    st.markdown("<h1 class='main-header'>⚽ Complete Football Analytics Dashboard</h1>", unsafe_allow_html=True)
+    
+    # ============ DATA INPUT SECTION ============
+    st.markdown("<h2 class='section-header'>📥 Data Input & Processing</h2>", unsafe_allow_html=True)
+    
     col1, col2 = st.columns([2, 1])
 
     with col1:
@@ -461,7 +701,7 @@ else:
         
         if errors:
             st.error(f"❌ Found {len(errors)} parsing errors")
-            for error in errors[:3]:  # Show first 3 errors
+            for error in errors[:3]:
                 st.write(f"- {error}")
             if len(errors) > 3:
                 st.write(f"- ... and {len(errors) - 3} more errors")
@@ -583,8 +823,8 @@ else:
                     st.session_state.status3_counters[away_team],
                     f"{home_team}: {st.session_state.ha_counters[home_team]} | {away_team}: {st.session_state.ha_counters[away_team]}",
                     f"{home_team}: {st.session_state.status3_counters[home_team]} | {away_team}: {st.session_state.status3_counters[away_team]}",
-                    st.session_state.season_number,  # Season number
-                    f"Season {st.session_state.season_number}"  # Season label
+                    st.session_state.season_number,
+                    f"Season {st.session_state.season_number}"
                 ])
                 
                 processed_count += 1
@@ -595,7 +835,6 @@ else:
             st.warning("⚠️ No valid matches found in the input")
 
     # ============ MAIN DASHBOARD SECTIONS ============
-    # CORRECTED CONDITION: Check if we have match data
     if len(st.session_state.match_data) > 0:
         column_names = [
             "Match_ID", "Home_Team", "Home_Score", "Away_Score", "Away_Team",
@@ -609,15 +848,16 @@ else:
         
         df = pd.DataFrame(st.session_state.match_data, columns=column_names)
         
-        # Create three main columns for the dashboard
-        st.markdown("---")
-        st.header(f"📊 Season {st.session_state.season_number} Dashboard")
+        # Divider
+        st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
         
         # Row 1: League Table and Recent Matches
+        st.markdown("<h2 class='section-header'>📊 Season Dashboard</h2>", unsafe_allow_html=True)
+        
         col_league, col_recent = st.columns([2, 1])
         
         with col_league:
-            st.subheader(f"🏆 Season {st.session_state.season_number} League Table")
+            st.markdown(f"<h3 style='color: #1E3A8A; font-size: 1.5rem;'>🏆 Season {st.session_state.season_number} League Table</h3>", unsafe_allow_html=True)
             rankings = calculate_rankings()
             
             table_data = []
@@ -636,7 +876,7 @@ else:
             st.dataframe(league_df, use_container_width=True, height=500)
             
             # Quick league insights
-            st.subheader("📈 League Insights")
+            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem; margin-top: 20px;'>📈 League Insights</h4>", unsafe_allow_html=True)
             insight_col1, insight_col2, insight_col3, insight_col4 = st.columns(4)
             
             with insight_col1:
@@ -660,16 +900,16 @@ else:
                     st.metric("League Leader", top_scorer['Team'], f"{top_scorer['Pts']} Pts")
         
         with col_recent:
-            st.subheader("🔄 Recent Match Summary")
+            st.markdown("<h3 style='color: #1E3A8A; font-size: 1.5rem;'>🔄 Recent Match Summary</h3>", unsafe_allow_html=True)
             
             st.markdown("""
-                <div style="background-color:black; color:white; padding:15px; border-radius:10px; border:2px solid #444;">
+                <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color:white; padding:20px; border-radius:15px; margin-bottom: 20px;">
             """, unsafe_allow_html=True)
             
             # Get recent matches (last 10)
             recent_matches = st.session_state.match_data[-10:] if len(st.session_state.match_data) > 0 else []
             
-            for match in recent_matches[::-1]:  # Reverse to show newest first
+            for match in recent_matches[::-1]:
                 home = match[1]
                 away = match[4]
                 home_score = match[2]
@@ -679,16 +919,16 @@ else:
                 
                 # Color code based on result
                 if home_score > away_score:
-                    home_style = "color: #4CAF50; font-weight: bold;"
-                    away_style = "color: #FF6B6B;"
+                    home_style = "color: #10B981; font-weight: bold;"
+                    away_style = "color: #EF4444;"
                 elif away_score > home_score:
-                    home_style = "color: #FF6B6B;"
-                    away_style = "color: #4CAF50; font-weight: bold;"
+                    home_style = "color: #EF4444;"
+                    away_style = "color: #10B981; font-weight: bold;"
                 else:
-                    home_style = away_style = "color: #FFD700;"
+                    home_style = away_style = "color: #F59E0B;"
                 
                 st.markdown(
-                    f"<div style='font-size:14px; margin-bottom:8px; padding:5px; border-bottom:1px solid #333;'>"
+                    f"<div class='match-row'>"
                     f"<span style='{home_style}'>{home_rank}. {home}</span> "
                     f"{home_score}-{away_score} "
                     f"<span style='{away_style}'>{away} ({away_rank}.)</span>"
@@ -699,7 +939,7 @@ else:
             st.markdown("</div>", unsafe_allow_html=True)
             
             # Quick stats
-            st.subheader("📋 Quick Stats")
+            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem;'>📋 Quick Stats</h4>", unsafe_allow_html=True)
             total_matches = len(st.session_state.match_data)
             
             # Calculate stats for current season only
@@ -719,9 +959,11 @@ else:
                 st.metric("Total Matches", total_matches)
                 st.metric("All-time Matches", total_matches)
         
+        # Divider
+        st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+        
         # Row 2: Match Predictor
-        st.markdown("---")
-        st.header("🎯 Match Predictor & Analytics")
+        st.markdown("<h2 class='section-header'>🎯 Match Predictor & Analytics</h2>", unsafe_allow_html=True)
         
         pred_col1, pred_col2 = st.columns(2)
         
@@ -740,67 +982,61 @@ else:
             h2h_stats = create_head_to_head_stats(home_team, away_team)
             
             # Display predictions in columns
-            st.subheader("📈 Match Predictions")
+            st.markdown("<h3 style='color: #1E3A8A; font-size: 1.5rem; margin-top: 20px;'>📈 Match Predictions</h3>", unsafe_allow_html=True)
             
             # Outcome probabilities
             outcome_col1, outcome_col2, outcome_col3 = st.columns(3)
             
             with outcome_col1:
                 st.metric("🏠 Home Win", f"{predictions['home_win']}%")
-                # FIX: Add error handling for progress bar
                 progress_value = min(1.0, max(0.0, predictions['home_win'] / 100))
                 st.progress(progress_value)
             
             with outcome_col2:
                 st.metric("🤝 Draw", f"{predictions['draw']}%")
-                # FIX: Add error handling for progress bar
                 progress_value = min(1.0, max(0.0, predictions['draw'] / 100))
                 st.progress(progress_value)
             
             with outcome_col3:
                 st.metric("✈️ Away Win", f"{predictions['away_win']}%")
-                # FIX: Add error handling for progress bar
                 progress_value = min(1.0, max(0.0, predictions['away_win'] / 100))
                 st.progress(progress_value)
             
             # Goal markets
-            st.subheader("⚽ Goal Markets")
+            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem; margin-top: 30px;'>⚽ Goal Markets</h4>", unsafe_allow_html=True)
             goal_col1, goal_col2, goal_col3, goal_col4 = st.columns(4)
             
             with goal_col1:
-                st.metric("Over 2.5 Goals", f"{predictions['over_2_5']}%")
-                # FIX: Add error handling for progress bar
+                st.metric("Over 2.5", f"{predictions['over_2_5']}%")
                 progress_value = min(1.0, max(0.0, predictions['over_2_5'] / 100))
                 st.progress(progress_value)
             
             with goal_col2:
-                st.metric("Over 3.5 Goals", f"{predictions['over_3_5']}%")
-                # FIX: Add error handling for progress bar
+                st.metric("Over 3.5", f"{predictions['over_3_5']}%")
                 progress_value = min(1.0, max(0.0, predictions['over_3_5'] / 100))
                 st.progress(progress_value)
             
             with goal_col3:
-                st.metric("Over 4.5 Goals", f"{predictions['over_4_5']}%")
-                # FIX: Add error handling for progress bar
+                st.metric("Over 4.5", f"{predictions['over_4_5']}%")
                 progress_value = min(1.0, max(0.0, predictions['over_4_5'] / 100))
                 st.progress(progress_value)
             
             with goal_col4:
-                st.metric("Both Teams Score", f"{predictions['both_teams_score']}%")
-                # FIX: Add error handling for progress bar
+                st.metric("BTS", f"{predictions['both_teams_score']}%")
                 progress_value = min(1.0, max(0.0, predictions['both_teams_score'] / 100))
                 st.progress(progress_value)
             
             # Expected goals
             col_exp1, col_exp2 = st.columns(2)
             with col_exp1:
-                st.metric("📊 Expected Total Goals", predictions['expected_goals'])
+                st.metric("📊 Expected Goals", predictions['expected_goals'])
             with col_exp2:
                 st.metric("🔮 Predicted Score", predictions['predicted_score'])
             
             # Head-to-head statistics
             if h2h_stats:
-                st.subheader("🤼 Head-to-Head History")
+                st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+                st.markdown("<h3 style='color: #1E3A8A; font-size: 1.5rem;'>🤼 Head-to-Head History</h3>", unsafe_allow_html=True)
                 h2h_col1, h2h_col2, h2h_col3, h2h_col4 = st.columns(4)
                 
                 with h2h_col1:
@@ -816,25 +1052,25 @@ else:
                     st.metric("Draws", h2h_stats["draws"])
                 
                 # Historical trends
-                st.markdown("**📊 Historical Trends:**")
+                st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem; margin-top: 20px;'>📊 Historical Trends</h4>", unsafe_allow_html=True)
                 trend_col1, trend_col2, trend_col3 = st.columns(3)
                 
                 with trend_col1:
-                    st.metric("Over 2.5 Goals", f"{h2h_stats['over_2_5_pct']}%")
+                    st.metric("Over 2.5", f"{h2h_stats['over_2_5_pct']}%")
                 
                 with trend_col2:
-                    st.metric("Over 3.5 Goals", f"{h2h_stats['over_3_5_pct']}%")
+                    st.metric("Over 3.5", f"{h2h_stats['over_3_5_pct']}%")
                 
                 with trend_col3:
-                    st.metric("Both Teams Scored", f"{h2h_stats['both_teams_score_pct']}%")
+                    st.metric("BTS", f"{h2h_stats['both_teams_score_pct']}%")
                 
                 st.caption(f"Average Goals per Match: {h2h_stats['avg_goals']}")
             else:
                 st.info("📊 No head-to-head history available for these teams")
             
             # Betting Recommendations
-            st.markdown("---")
-            st.subheader("💰 Betting Recommendations")
+            st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #1E3A8A; font-size: 1.5rem;'>💰 Betting Recommendations</h3>", unsafe_allow_html=True)
             
             recommendations = generate_betting_recommendations(
                 home_team, away_team, predictions, team_metrics, h2h_stats
@@ -862,13 +1098,14 @@ else:
             
             # Key Insights
             if recommendations["insights"]:
-                st.markdown("#### 📊 **KEY INSIGHTS:**")
+                st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+                st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem;'>📊 KEY INSIGHTS</h4>", unsafe_allow_html=True)
                 for insight in recommendations["insights"]:
                     st.write(f"• {insight}")
             
             # Team Comparison
-            st.markdown("---")
-            st.subheader("📋 Team Comparison")
+            st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #1E3A8A; font-size: 1.5rem;'>📋 Team Comparison</h3>", unsafe_allow_html=True)
             
             compare_data = {
                 "Metric": ["Win Rate", "Draw Rate", "Loss Rate", "Avg Goals For", 
@@ -896,14 +1133,15 @@ else:
             compare_df = pd.DataFrame(compare_data)
             st.dataframe(compare_df, use_container_width=True, hide_index=True)
         
+        # Divider
+        st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+        
         # Row 3: Data Export and Management
-        st.markdown("---")
-        st.header("💾 Data Management & Export")
+        st.markdown("<h2 class='section-header'>💾 Data Management & Export</h2>", unsafe_allow_html=True)
         
         exp_col1, exp_col2, exp_col3 = st.columns(3)
         
         with exp_col1:
-            # Export ALL match data (all seasons)
             csv_full = df.to_csv(index=False)
             st.download_button(
                 "📋 Download ALL Match Data",
@@ -915,7 +1153,6 @@ else:
             )
         
         with exp_col2:
-            # Export current season data only
             current_season_df = df[df["Season_Number"] == st.session_state.season_number]
             if len(current_season_df) > 0:
                 csv_current = current_season_df.to_csv(index=False)
@@ -931,7 +1168,6 @@ else:
                 st.info("No matches in current season")
         
         with exp_col3:
-            # Export league table
             csv_league = league_df.to_csv(index=False)
             st.download_button(
                 "📊 Download League Table",
@@ -956,61 +1192,72 @@ else:
 
     else:
         # Welcome message when no data exists
-        st.markdown("---")
-        st.subheader("🚀 Getting Started")
+        st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+        st.markdown("<h2 class='section-header'>🚀 Getting Started</h2>", unsafe_allow_html=True)
         
         col_welcome1, col_welcome2 = st.columns(2)
         
         with col_welcome1:
             st.markdown("""
-            ### 📝 How to use this dashboard:
-            1. **Paste match data** in the text area above
-            2. Click **"Parse and Add Matches"** to process
-            3. View **live league table** and statistics
-            4. Use the **Match Predictor** for analytics
-            5. **Download data** for further analysis
+            <div style='background: #F9FAFB; padding: 25px; border-radius: 15px; height: 100%;'>
+            <h3 style='color: #1E3A8A;'>📝 How to use this dashboard:</h3>
+            <ol style='color: #4B5563; font-size: 16px; line-height: 1.6;'>
+            <li><strong>Paste match data</strong> in the text area above</li>
+            <li>Click <strong>"Parse and Add Matches"</strong> to process</li>
+            <li>View <strong>live league table</strong> and statistics</li>
+            <li>Use the <strong>Match Predictor</strong> for analytics</li>
+            <li><strong>Download data</strong> for further analysis</li>
+            </ol>
             
-            ### 🔄 Automatic Season Management:
-            - League resets automatically after 38 matches
-            - **Match history is preserved** for CSV exports
-            - Only season stats reset for new season
-            - Manual reset button available
-            """)
+            <h4 style='color: #1E3A8A; margin-top: 25px;'>🔄 Automatic Season Management:</h4>
+            <ul style='color: #4B5563; font-size: 16px; line-height: 1.6;'>
+            <li>League resets automatically after 38 matches</li>
+            <li><strong>Match history is preserved</strong> for CSV exports</li>
+            <li>Only season stats reset for new season</li>
+            <li>Manual reset button available</li>
+            </ul>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col_welcome2:
             st.markdown("""
-            ### 📊 What you'll see:
-            - **Live League Table** with rankings
-            - **Match Predictions** with probabilities
-            - **Betting Recommendations** based on data
-            - **Head-to-Head Statistics**
-            - **Team Comparison** metrics
-            - **Data Export** options (all seasons or current)
+            <div style='background: #F9FAFB; padding: 25px; border-radius: 15px; height: 100%;'>
+            <h3 style='color: #1E3A8A;'>📊 What you'll see:</h3>
+            <ul style='color: #4B5563; font-size: 16px; line-height: 1.6;'>
+            <li><strong>Live League Table</strong> with rankings</li>
+            <li><strong>Match Predictions</strong> with probabilities</li>
+            <li><strong>Betting Recommendations</strong> based on data</li>
+            <li><strong>Head-to-Head Statistics</strong></li>
+            <li><strong>Team Comparison</strong> metrics</li>
+            <li><strong>Data Export</strong> options (all seasons or current)</li>
+            </ul>
             
-            ### 💡 Tips:
-            - Use consistent team names from the list
-            - Data format: Team, Score, Score, Team
-            - The cleaner removes dates, times, and league info
-            - Example input:
-            ```
-            Manchester Blue
-            2
-            1
-            Liverpool
-            London Reds
-            0
-            0
+            <h4 style='color: #1E3A8A; margin-top: 25px;'>💡 Tips:</h4>
+            <ul style='color: #4B5563; font-size: 16px; line-height: 1.6;'>
+            <li>Use consistent team names from the list</li>
+            <li>Data format: Team, Score, Score, Team</li>
+            <li>The cleaner removes dates, times, and league info</li>
+            <li>Example input:</li>
+            </ul>
+            <div style='background: white; padding: 15px; border-radius: 10px; font-family: "Courier New", monospace; margin-top: 10px;'>
+            Manchester Blue<br>
+            2<br>
+            1<br>
+            Liverpool<br>
+            London Reds<br>
+            0<br>
+            0<br>
             Everton
-            ```
-            """)
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
 
     # Footer
-    st.markdown("---")
-    st.markdown(
-        "<div style='text-align: center; color: #666; font-size: 0.9em;'>"
-        f"⚽ Football Analytics Dashboard • Season {st.session_state.season_number} • Automatic 38-match season reset • All match data preserved"
-        "</div>",
-        unsafe_allow_html=True
-    )
-
-
+    st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class='footer-text'>
+    ⚽ <strong>Football Analytics Dashboard</strong> • Season {st.session_state.season_number} • Automatic 38-match season reset • All match data preserved
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("</div>", unsafe_allow_html=True)  # Close main container
