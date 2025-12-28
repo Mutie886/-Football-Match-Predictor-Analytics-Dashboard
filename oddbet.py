@@ -3,6 +3,22 @@ import pandas as pd
 import re
 
 # -------------------------
+# Safe rerun helper
+# -------------------------
+def safe_rerun():
+    """
+    Call Streamlit's rerun function if available.
+    Some Streamlit builds expose `experimental_rerun`, others expose `rerun`.
+    If neither exists, do nothing (safe fallback).
+    """
+    rerun_fn = getattr(st, "experimental_rerun", None) or getattr(st, "rerun", None)
+    if callable(rerun_fn):
+        try:
+            rerun_fn()
+        except Exception:
+            pass
+
+# -------------------------
 # Configuration and teams
 # -------------------------
 VALID_TEAMS = {
@@ -371,16 +387,15 @@ if page == "Counter Logic Dashboard":
         # Build mapping from unordered pair -> latest match (by Match_ID)
         latest_by_pair = {}
         for m in st.session_state.match_data:
-            # Defensive extraction
             match_id = m[0] if len(m) > 0 else 0
             home = m[1] if len(m) > 1 else ""
             away = m[4] if len(m) > 4 else ""
+            if not home or not away:
+                continue
             pair_key = frozenset([home, away])
-            # Keep the match with the highest match_id (most recent)
-            if pair_key:
-                existing = latest_by_pair.get(pair_key)
-                if existing is None or (isinstance(existing, list) and match_id >= existing[0]):
-                    latest_by_pair[pair_key] = [match_id, m]
+            existing = latest_by_pair.get(pair_key)
+            if existing is None or match_id >= existing[0]:
+                latest_by_pair[pair_key] = [match_id, m]
 
         # Extract latest matches, sort by match_id descending (most recent first)
         latest_matches = sorted([v for v in latest_by_pair.values()], key=lambda x: x[0], reverse=True)
@@ -388,7 +403,6 @@ if page == "Counter Logic Dashboard":
         latest_10 = [item[1] for item in latest_matches[:10]]
 
         # Prepare display rows (show newest first)
-        # We'll display them in newest -> oldest order for clarity
         left_col, right_col = st.columns(2)
 
         with left_col:
@@ -398,7 +412,6 @@ if page == "Counter Logic Dashboard":
                 home_score = m[2] if len(m) > 2 else ""
                 away_score = m[3] if len(m) > 3 else ""
                 away = m[4] if len(m) > 4 else ""
-                # FI display stored at index 19 or fallback to counters
                 fi_display = m[19] if len(m) > 19 else f"{home}: {st.session_state.ha_counters.get(home,0)} | {away}: {st.session_state.ha_counters.get(away,0)}"
                 st.markdown(f"**{home}**: {home_score}  |  **{away}**: {away_score}  —  {fi_display}")
 
@@ -456,12 +469,12 @@ else:
         with action_col1:
             if st.button("🔄 Manual Reset", help="Reset stats for new season", use_container_width=True):
                 reset_league_for_new_season()
-                st.experimental_rerun()
+                safe_rerun()
         with action_col2:
             if st.button("🗑️ Clear All", help="Clear all match data", use_container_width=True):
                 st.session_state.match_data = []
                 reset_league_for_new_season()
-                st.experimental_rerun()
+                safe_rerun()
 
     # Process input
     if parse_clicked and raw_input.strip():
@@ -602,7 +615,7 @@ else:
                 processed_count += 1
 
             st.success(f"✅ Added {processed_count} matches to Season {st.session_state.season_number}")
-            st.experimental_rerun()
+            safe_rerun()
         else:
             st.warning("⚠️ No valid matches found in the input")
 
