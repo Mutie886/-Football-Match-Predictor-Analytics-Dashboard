@@ -2,25 +2,7 @@ import streamlit as st
 import pandas as pd
 import re
 
-# -------------------------
-# Safe rerun helper
-# -------------------------
-def safe_rerun():
-    """
-    Call Streamlit's rerun function if available.
-    Some Streamlit builds expose `experimental_rerun`, others expose `rerun`.
-    If neither exists, do nothing (safe fallback).
-    """
-    rerun_fn = getattr(st, "experimental_rerun", None) or getattr(st, "rerun", None)
-    if callable(rerun_fn):
-        try:
-            rerun_fn()
-        except Exception:
-            pass
-
-# -------------------------
-# Configuration and teams
-# -------------------------
+# Allowed team names (case-sensitive)
 VALID_TEAMS = {
     "Leeds", "Aston V", "Manchester Blue", "Liverpool", "London Blues", "Everton",
     "Brighton", "Sheffield U", "Tottenham", "Palace", "Newcastle", "West Ham",
@@ -30,9 +12,7 @@ VALID_TEAMS = {
 
 st.set_page_config(page_title="Football Results Dashboard", page_icon="⚽", layout="wide")
 
-# -------------------------
-# Session state init
-# -------------------------
+# ============ SESSION STATE INITIALIZATION ============
 if "match_data" not in st.session_state:
     st.session_state.match_data = []
 if "home_counters" not in st.session_state:
@@ -40,12 +20,15 @@ if "home_counters" not in st.session_state:
 if "away_counters" not in st.session_state:
     st.session_state.away_counters = {team: 0 for team in VALID_TEAMS}
 if "ha_counters" not in st.session_state:
-    st.session_state.ha_counters = {team: 0 for team in VALID_TEAMS}  # F!=4HA counter
+    st.session_state.ha_counters = {team: 0 for team in VALID_TEAMS}
 if "status3_counters" not in st.session_state:
     st.session_state.status3_counters = {team: 0 for team in VALID_TEAMS}
 if "team_stats" not in st.session_state:
     st.session_state.team_stats = {
-        team: {"P": 0, "W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, "GD": 0, "Pts": 0, "Form": []}
+        team: {
+            "P": 0, "W": 0, "D": 0, "L": 0, "GF": 0, "GA": 0, 
+            "GD": 0, "Pts": 0, "Form": []
+        }
         for team in VALID_TEAMS
     }
 if "match_counter" not in st.session_state:
@@ -53,9 +36,7 @@ if "match_counter" not in st.session_state:
 if "season_number" not in st.session_state:
     st.session_state.season_number = 1
 
-# -------------------------
-# Helper functions (EXACTLY FROM FIRST PROGRAM)
-# -------------------------
+# ============ HELPER FUNCTIONS ============
 def reset_league_for_new_season():
     """Reset team statistics for a new season while preserving match history"""
     # Reset team stats (current season only) - KEEP match_data for CSV exports
@@ -392,14 +373,10 @@ def clean_and_parse_matches(text: str):
     matches.reverse()
     return matches, errors, cleaned_lines
 
-# -------------------------
-# UI: Sidebar navigation
-# -------------------------
+# ============ SIDEBAR NAVIGATION ============
 page = st.sidebar.selectbox("Select page", ["Main Dashboard", "Counter Logic Dashboard"])
 
-# -------------------------
-# Page: Counter Logic Dashboard
-# -------------------------
+# ============ COUNTER LOGIC DASHBOARD ============
 if page == "Counter Logic Dashboard":
     st.title("🧮 Counter Logic Dashboard — FI=4HA & Status3 (Last 10 Matches)")
     
@@ -454,9 +431,7 @@ if page == "Counter Logic Dashboard":
         for val in status3_values:
             st.write(val)
 
-# -------------------------
-# Page: Main Dashboard (EXACTLY FROM FIRST PROGRAM)
-# -------------------------
+# ============ MAIN DASHBOARD (EXACTLY YOUR CODE) ============
 else:
     st.title("⚽ Complete Football Analytics Dashboard")
 
@@ -487,13 +462,13 @@ else:
         with action_col1:
             if st.button("🔄 Manual Reset", help="Reset stats for new season", use_container_width=True):
                 reset_league_for_new_season()
-                safe_rerun()
+                st.rerun()
         
         with action_col2:
             if st.button("🗑️ Clear All", help="Clear all match data", use_container_width=True):
                 st.session_state.match_data = []
                 reset_league_for_new_season()
-                safe_rerun()
+                st.rerun()
 
     # Process input data
     if parse_clicked and raw_input.strip():
@@ -630,7 +605,7 @@ else:
                 processed_count += 1
             
             st.success(f"✅ Added {processed_count} matches to Season {st.session_state.season_number}")
-            safe_rerun()
+            st.rerun()
         else:
             st.warning("⚠️ No valid matches found in the input")
 
