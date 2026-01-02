@@ -196,6 +196,31 @@ st.markdown("""
         border-radius: 10px;
         margin: 30px 0;
     }
+    
+    /* Alert styles */
+    .alert-critical {
+        background: linear-gradient(90deg, #EF4444, #F87171);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+    
+    .alert-warning {
+        background: linear-gradient(90deg, #F59E0B, #FBBF24);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
+    
+    .alert-info {
+        background: linear-gradient(90deg, #3B82F6, #60A5FA);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -206,6 +231,12 @@ VALID_TEAMS = {
     "Leicester", "West Brom", "Burnley", "London Reds", "Southampton", "Wolves",
     "Fulham", "Manchester Reds"
 }
+
+# ============ COUNTER ALERT SETTINGS ============
+F4_ALERT_THRESHOLD = 8  # Warn when F!=4HA counter reaches 8
+F4_CRITICAL_THRESHOLD = 10  # Critical alert when reaches 10
+S3_ALERT_THRESHOLD = 7  # Warn when Status3 counter reaches 7
+S3_CRITICAL_THRESHOLD = 9  # Critical alert when reaches 9
 
 st.set_page_config(page_title="Football Results Dashboard", page_icon="⚽", layout="wide")
 
@@ -570,6 +601,85 @@ def clean_and_parse_matches(text: str):
     matches.reverse()
     return matches, errors, cleaned_lines
 
+def check_counter_alerts():
+    """Check all teams for counter alerts and return alerts dictionary"""
+    alerts = {
+        "f4_alerts": [],  # Teams with high F!=4HA counters
+        "s3_alerts": [],  # Teams with high Status3 counters
+        "critical_alerts": []  # Teams exceeding critical thresholds
+    }
+    
+    for team in VALID_TEAMS:
+        f4_counter = st.session_state.ha_counters[team]
+        s3_counter = st.session_state.status3_counters[team]
+        
+        # Check F!=4HA alerts
+        if f4_counter >= F4_CRITICAL_THRESHOLD:
+            alerts["critical_alerts"].append({
+                "team": team,
+                "counter": f4_counter,
+                "type": "F!=4HA",
+                "level": "CRITICAL",
+                "message": f"🔴 {team}: F!=4HA counter = {f4_counter} (EXCEEDED {F4_CRITICAL_THRESHOLD} LIMIT!)"
+            })
+        elif f4_counter >= F4_ALERT_THRESHOLD:
+            alerts["f4_alerts"].append({
+                "team": team,
+                "counter": f4_counter,
+                "type": "F!=4HA",
+                "level": "WARNING",
+                "message": f"⚠️ {team}: F!=4HA counter = {f4_counter} (needs 4-goal match soon)"
+            })
+        
+        # Check Status3 alerts
+        if s3_counter >= S3_CRITICAL_THRESHOLD:
+            alerts["critical_alerts"].append({
+                "team": team,
+                "counter": s3_counter,
+                "type": "Status3",
+                "level": "CRITICAL",
+                "message": f"🔥 {team}: Status3 counter = {s3_counter} (EXCEEDED {S3_CRITICAL_THRESHOLD} LIMIT!)"
+            })
+        elif s3_counter >= S3_ALERT_THRESHOLD:
+            alerts["s3_alerts"].append({
+                "team": team,
+                "counter": s3_counter,
+                "type": "Status3",
+                "level": "WARNING",
+                "message": f"🎯 {team}: Status3 counter = {s3_counter} (due for 3+ goal match)"
+            })
+    
+    # Sort alerts by counter value (highest first)
+    alerts["f4_alerts"].sort(key=lambda x: x["counter"], reverse=True)
+    alerts["s3_alerts"].sort(key=lambda x: x["counter"], reverse=True)
+    alerts["critical_alerts"].sort(key=lambda x: x["counter"], reverse=True)
+    
+    return alerts
+
+def get_alert_symbols_and_reason(f4_counter, s3_counter):
+    """Generate alert symbols and reason text for a team"""
+    f4_alert = ""
+    s3_alert = ""
+    reasons = []
+    
+    if f4_counter >= F4_CRITICAL_THRESHOLD:
+        f4_alert = "🔴"
+        reasons.append(f"F4={f4_counter} (CRITICAL)")
+    elif f4_counter >= F4_ALERT_THRESHOLD:
+        f4_alert = "⚠️"
+        reasons.append(f"F4={f4_counter}")
+    
+    if s3_counter >= S3_CRITICAL_THRESHOLD:
+        s3_alert = "🔥"
+        reasons.append(f"S3={s3_counter} (CRITICAL)")
+    elif s3_counter >= S3_ALERT_THRESHOLD:
+        s3_alert = "🎯"
+        reasons.append(f"S3={s3_counter}")
+    
+    alert_reason = " | ".join(reasons) if reasons else ""
+    
+    return f4_alert, s3_alert, alert_reason
+
 # ============ SIDEBAR NAVIGATION ============
 st.sidebar.markdown("""
 <div style='padding: 20px; background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 100%); border-radius: 10px; color: white;'>
@@ -591,6 +701,11 @@ if len(st.session_state.match_data) > 0:
     st.sidebar.metric("Current Season", f"Season {st.session_state.season_number}")
     st.sidebar.metric("Matches This Season", len(current_season_matches))
     st.sidebar.metric("Total Matches", len(st.session_state.match_data))
+    
+    # Show alert count in sidebar
+    alerts = check_counter_alerts()
+    total_alerts = len(alerts["critical_alerts"]) + len(alerts["f4_alerts"]) + len(alerts["s3_alerts"])
+    st.sidebar.metric("Active Alerts", total_alerts)
 else:
     st.sidebar.info("No matches yet")
 
@@ -807,7 +922,22 @@ else:
                 home_rank = get_team_position(home_team)
                 away_rank = get_team_position(away_team)
                 
-                # Add match data with season info
+                # Generate alert symbols and reason
+                home_f4_alert, home_s3_alert, home_alert_reason = get_alert_symbols_and_reason(
+                    st.session_state.ha_counters[home_team], 
+                    st.session_state.status3_counters[home_team]
+                )
+                away_f4_alert, away_s3_alert, away_alert_reason = get_alert_symbols_and_reason(
+                    st.session_state.ha_counters[away_team], 
+                    st.session_state.status3_counters[away_team]
+                )
+                
+                # Combine alert reasons
+                combined_alert_reason = ""
+                if home_alert_reason or away_alert_reason:
+                    combined_alert_reason = f"{home_team}: {home_alert_reason} | {away_team}: {away_alert_reason}"
+                
+                # Add match data with season info AND ALERTS
                 st.session_state.match_data.append([
                     match_id, home_team, home_score, away_score, away_team,
                     total_goals, total_g_display, result,
@@ -823,6 +953,7 @@ else:
                     st.session_state.status3_counters[away_team],
                     f"{home_team}: {st.session_state.ha_counters[home_team]} | {away_team}: {st.session_state.ha_counters[away_team]}",
                     f"{home_team}: {st.session_state.status3_counters[home_team]} | {away_team}: {st.session_state.status3_counters[away_team]}",
+                    home_f4_alert, home_s3_alert, away_f4_alert, away_s3_alert, combined_alert_reason,  # NEW ALERT COLUMNS
                     st.session_state.season_number,
                     f"Season {st.session_state.season_number}"
                 ])
@@ -843,7 +974,9 @@ else:
             "Games_Since_Last_Won_Home", "Games_Since_Last_Won_Away",
             "Games_Since_Last_Won_Combined_Home", "Games_Since_Last_Won_Combined_Away",
             "Games_Since_Last_3Goals_Home", "Games_Since_Last_3Goals_Away",
-            "F!=4HA", "Status3", "Season_Number", "Season_Label"
+            "F!=4HA", "Status3",
+            "F4_Alert_Home", "S3_Alert_Home", "F4_Alert_Away", "S3_Alert_Away", "Alert_Reason",  # NEW COLUMNS
+            "Season_Number", "Season_Label"
         ]
         
         df = pd.DataFrame(st.session_state.match_data, columns=column_names)
@@ -958,6 +1091,77 @@ else:
             else:
                 st.metric("Total Matches", total_matches)
                 st.metric("All-time Matches", total_matches)
+        
+        # Divider
+        st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+        
+        # ============ COUNTER ALERTS DASHBOARD ============
+        st.markdown("<h2 class='section-header'>🚨 Counter Alert Dashboard</h2>", unsafe_allow_html=True)
+        
+        # Get current alerts
+        alerts = check_counter_alerts()
+        
+        # Display critical alerts first
+        if alerts["critical_alerts"]:
+            st.markdown("<h3 style='color: #EF4444; font-size: 1.5rem;'>🔴 CRITICAL ALERTS (Exceeded Limits)</h3>", unsafe_allow_html=True)
+            for alert in alerts["critical_alerts"]:
+                with st.expander(f"{alert['message']}", expanded=True):
+                    st.write(f"**Team:** {alert['team']}")
+                    st.write(f"**Counter Type:** {alert['type']}")
+                    st.write(f"**Current Counter:** {alert['counter']}")
+                    threshold = F4_CRITICAL_THRESHOLD if alert['type'] == 'F!=4HA' else S3_CRITICAL_THRESHOLD
+                    st.write(f"**Threshold Exceeded:** {threshold}")
+                    st.write(f"**Status:** URGENT - Team needs to hit target immediately!")
+        
+        # Display warning alerts in columns
+        col_f4, col_s3 = st.columns(2)
+        
+        with col_f4:
+            if alerts["f4_alerts"]:
+                st.markdown("<h3 style='color: #F59E0B; font-size: 1.5rem;'>⚠️ F!=4HA Warnings (Counter ≥ {F4_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
+                for alert in alerts["f4_alerts"]:
+                    progress_value = min(1.0, alert['counter'] / 12)  # 12 as max for progress bar
+                    st.write(f"{alert['message']}")
+                    st.progress(progress_value)
+            else:
+                st.markdown("<h3 style='color: #10B981; font-size: 1.5rem;'>✅ F!=4HA Status: All Normal</h3>", unsafe_allow_html=True)
+                st.info(f"No teams have F!=4HA counters ≥ {F4_ALERT_THRESHOLD}")
+        
+        with col_s3:
+            if alerts["s3_alerts"]:
+                st.markdown("<h3 style='color: #3B82F6; font-size: 1.5rem;'>🎯 Status3 Warnings (Counter ≥ {S3_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
+                for alert in alerts["s3_alerts"]:
+                    progress_value = min(1.0, alert['counter'] / 11)  # 11 as max for progress bar
+                    st.write(f"{alert['message']}")
+                    st.progress(progress_value)
+            else:
+                st.markdown("<h3 style='color: #10B981; font-size: 1.5rem;'>✅ Status3 Status: All Normal</h3>", unsafe_allow_html=True)
+                st.info(f"No teams have Status3 counters ≥ {S3_ALERT_THRESHOLD}")
+        
+        # Summary statistics
+        st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem; margin-top: 20px;'>📊 Alert Summary</h4>", unsafe_allow_html=True)
+        summary_col1, summary_col2, summary_col3 = st.columns(3)
+        
+        with summary_col1:
+            st.metric("Critical Alerts", len(alerts["critical_alerts"]))
+        
+        with summary_col2:
+            st.metric("F!=4HA Warnings", len(alerts["f4_alerts"]))
+        
+        with summary_col3:
+            st.metric("Status3 Warnings", len(alerts["s3_alerts"]))
+        
+        # Alert threshold settings
+        with st.expander("⚙️ Alert Settings", expanded=False):
+            st.write(f"**F!=4HA Alerts:**")
+            st.write(f"- Warning at counter ≥ {F4_ALERT_THRESHOLD}")
+            st.write(f"- Critical at counter ≥ {F4_CRITICAL_THRESHOLD}")
+            st.write(f"**Status3 Alerts:**")
+            st.write(f"- Warning at counter ≥ {S3_ALERT_THRESHOLD}")
+            st.write(f"- Critical at counter ≥ {S3_CRITICAL_THRESHOLD}")
+            
+            # Optional: Allow users to adjust thresholds
+            st.caption("Note: Thresholds are fixed in current version. Contact developer to modify.")
         
         # Divider
         st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
@@ -1148,7 +1352,7 @@ else:
                 data=csv_full,
                 file_name=f"football_data_all_seasons.csv",
                 mime="text/csv",
-                help="Includes ALL matches from ALL seasons",
+                help="Includes ALL matches from ALL seasons with ALERTS",
                 use_container_width=True
             )
         
@@ -1161,7 +1365,7 @@ else:
                     data=csv_current,
                     file_name=f"season_{st.session_state.season_number}_matches.csv",
                     mime="text/csv",
-                    help=f"Matches from Season {st.session_state.season_number} only",
+                    help=f"Matches from Season {st.session_state.season_number} only with ALERTS",
                     use_container_width=True
                 )
             else:
@@ -1205,6 +1409,7 @@ else:
             <li><strong>Paste match data</strong> in the text area above</li>
             <li>Click <strong>"Parse and Add Matches"</strong> to process</li>
             <li>View <strong>live league table</strong> and statistics</li>
+            <li>Check <strong>Counter Alerts</strong> for teams due for targets</li>
             <li>Use the <strong>Match Predictor</strong> for analytics</li>
             <li><strong>Download data</strong> for further analysis</li>
             </ol>
@@ -1225,20 +1430,21 @@ else:
             <h3 style='color: #1E3A8A;'>📊 What you'll see:</h3>
             <ul style='color: #4B5563; font-size: 16px; line-height: 1.6;'>
             <li><strong>Live League Table</strong> with rankings</li>
+            <li><strong>Counter Alert Dashboard</strong> with warnings</li>
             <li><strong>Match Predictions</strong> with probabilities</li>
             <li><strong>Betting Recommendations</strong> based on data</li>
             <li><strong>Head-to-Head Statistics</strong></li>
-            <li><strong>Team Comparison</strong> metrics</li>
-            <li><strong>Data Export</strong> options (all seasons or current)</li>
+            <li><strong>Data Export</strong> with alert tracking</li>
             </ul>
             
-            <h4 style='color: #1E3A8A; margin-top: 25px;'>💡 Tips:</h4>
+            <h4 style='color: #1E3A8A; margin-top: 25px;'>🚨 Alert System:</h4>
             <ul style='color: #4B5563; font-size: 16px; line-height: 1.6;'>
-            <li>Use consistent team names from the list</li>
-            <li>Data format: Team, Score, Score, Team</li>
-            <li>The cleaner removes dates, times, and league info</li>
-            <li>Example input:</li>
+            <li><strong>F!=4HA Alerts</strong>: Warns at counter ≥ 8, Critical at ≥ 10</li>
+            <li><strong>Status3 Alerts</strong>: Warns at counter ≥ 7, Critical at ≥ 9</li>
+            <li>All alerts stored in CSV for historical tracking</li>
+            <li>Teams "due" for target matches highlighted</li>
             </ul>
+            
             <div style='background: white; padding: 15px; border-radius: 10px; font-family: "Courier New", monospace; margin-top: 10px;'>
             Manchester Blue<br>
             2<br>
@@ -1256,7 +1462,7 @@ else:
     st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
     st.markdown(f"""
     <div class='footer-text'>
-    ⚽ <strong>Football Analytics Dashboard</strong> • Season {st.session_state.season_number} • Automatic 38-match season reset • All match data preserved
+    ⚽ <strong>Football Analytics Dashboard</strong> • Season {st.session_state.season_number} • Counter Alerts: F!=4HA≥8/10 • Status3≥7/9 • All match data preserved
     </div>
     """, unsafe_allow_html=True)
     
