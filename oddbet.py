@@ -41,6 +41,15 @@ st.markdown("""
         margin: 1.5rem 0 1rem 0;
     }
     
+    .subsection-header {
+        color: #1E3A8A;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 1.2rem 0 0.8rem 0;
+        padding-left: 15px;
+        border-left: 4px solid #3B82F6;
+    }
+    
     /* Buttons */
     .stButton > button {
         background: linear-gradient(90deg, #1E3A8A, #3B82F6);
@@ -197,29 +206,72 @@ st.markdown("""
         margin: 30px 0;
     }
     
-    /* Alert styles */
-    .alert-critical {
-        background: linear-gradient(90deg, #EF4444, #F87171);
-        color: white;
+    /* Alert boxes */
+    .alert-box {
         padding: 15px;
         border-radius: 10px;
         margin: 10px 0;
+        border-left: 5px solid;
+    }
+    
+    .alert-critical {
+        background-color: #FEF2F2;
+        border-left-color: #EF4444;
+        color: #7F1D1D;
     }
     
     .alert-warning {
-        background: linear-gradient(90deg, #F59E0B, #FBBF24);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 10px 0;
+        background-color: #FFFBEB;
+        border-left-color: #F59E0B;
+        color: #78350F;
     }
     
     .alert-info {
-        background: linear-gradient(90deg, #3B82F6, #60A5FA);
-        color: white;
-        padding: 15px;
+        background-color: #EFF6FF;
+        border-left-color: #3B82F6;
+        color: #1E3A8A;
+    }
+    
+    /* Tree structure */
+    .tree-node {
+        padding-left: 20px;
+        margin: 5px 0;
+        position: relative;
+    }
+    
+    .tree-node::before {
+        content: "├─ ";
+        position: absolute;
+        left: 0;
+        color: #6B7280;
+    }
+    
+    .tree-node.last::before {
+        content: "└─ ";
+    }
+    
+    .tree-subnode {
+        padding-left: 40px;
+        margin: 3px 0;
+        position: relative;
+    }
+    
+    .tree-subnode::before {
+        content: "│  └─ ";
+        position: absolute;
+        left: 0;
+        color: #9CA3AF;
+    }
+    
+    /* Dashboard structure */
+    .dashboard-structure {
+        background: #F9FAFB;
         border-radius: 10px;
-        margin: 10px 0;
+        padding: 20px;
+        margin: 15px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        border: 1px solid #E5E7EB;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -238,7 +290,7 @@ F4_CRITICAL_THRESHOLD = 10  # Critical alert when reaches 10
 S3_ALERT_THRESHOLD = 7  # Warn when Status3 counter reaches 7
 S3_CRITICAL_THRESHOLD = 9  # Critical alert when reaches 9
 
-st.set_page_config(page_title="Football Results Dashboard", page_icon="⚽", layout="wide")
+st.set_page_config(page_title="Football Analytics Dashboard", page_icon="⚽", layout="wide")
 
 # ============ SESSION STATE INITIALIZATION ============
 if "match_data" not in st.session_state:
@@ -373,7 +425,8 @@ def calculate_historical_patterns():
                 "s3_hit_rate": 0,
                 "prediction_f4": "Insufficient data",
                 "prediction_s3": "Insufficient data",
-                "total_matches_analyzed": len(team_matches)
+                "f4_type_a_alert": "",
+                "s3_type_a_alert": ""
             }
             continue
         
@@ -419,13 +472,25 @@ def calculate_historical_patterns():
         f4_hit_rate = (f4_hit_count / len(team_matches) * 100) if team_matches else 0
         s3_hit_rate = (s3_hit_count / len(team_matches) * 100) if team_matches else 0
         
-        # Generate predictions
+        # Current counters
         current_f4 = st.session_state.ha_counters[team]
         current_s3 = st.session_state.status3_counters[team]
         
-        # F!=4HA prediction
+        # Generate TYPE A ALERTS
+        f4_type_a_alert = ""
+        s3_type_a_alert = ""
+        
+        if current_f4 >= F4_ALERT_THRESHOLD and avg_f4 > 0:
+            probability = min(95, max(10, (current_f4 / avg_f4) * 70))
+            f4_type_a_alert = f"⚠️ **{team} has F!=4HA counter at {current_f4}.** Historical: They hit 4 goals within next 3 matches **{probability:.0f}%** of time."
+        
+        if current_s3 >= S3_ALERT_THRESHOLD and avg_s3 > 0:
+            probability = min(95, max(10, (current_s3 / avg_s3) * 65))
+            s3_type_a_alert = f"🎯 **{team} has Status3 counter at {current_s3}.** Historical: They hit 3+ goals within next 2 matches **{probability:.0f}%** of time."
+        
+        # Regular predictions
         if f4_hit_rate > 0:
-            if current_f4 >= max_f4_counter * 0.8 and max_f4_counter > 0:
+            if current_f4 >= max_f4_counter * 0.8:
                 pred_f4 = f"CRITICAL: Usually hits 4 goals every {avg_f4:.1f} matches (now at {current_f4})"
             elif current_f4 >= avg_f4:
                 pred_f4 = f"HIGH PROBABILITY: Due for 4 goals (average: {avg_f4:.1f} matches between 4-goal games)"
@@ -434,9 +499,8 @@ def calculate_historical_patterns():
         else:
             pred_f4 = "Rarely hits 4 goals"
         
-        # Status3 prediction
         if s3_hit_rate > 0:
-            if current_s3 >= max_s3_counter * 0.8 and max_s3_counter > 0:
+            if current_s3 >= max_s3_counter * 0.8:
                 pred_s3 = f"CRITICAL: Usually hits 3+ goals every {avg_s3:.1f} matches (now at {current_s3})"
             elif current_s3 >= avg_s3:
                 pred_s3 = f"HIGH PROBABILITY: Due for 3+ goals (average: {avg_s3:.1f} matches between 3+ goal games)"
@@ -454,6 +518,8 @@ def calculate_historical_patterns():
             "s3_hit_rate": round(s3_hit_rate, 1),
             "prediction_f4": pred_f4,
             "prediction_s3": pred_s3,
+            "f4_type_a_alert": f4_type_a_alert,
+            "s3_type_a_alert": s3_type_a_alert,
             "total_matches_analyzed": len(team_matches)
         }
     
@@ -709,7 +775,7 @@ def clean_and_parse_matches(text: str):
     return matches, errors, cleaned_lines
 
 def check_counter_alerts():
-    """Check all teams for counter alerts and return alerts dictionary with historical context"""
+    """Check all teams for counter alerts and return alerts dictionary"""
     alerts = {
         "f4_alerts": [],  # Teams with high F!=4HA counters
         "s3_alerts": [],  # Teams with high Status3 counters
@@ -726,58 +792,50 @@ def check_counter_alerts():
         
         # Check F!=4HA alerts
         if f4_counter >= F4_CRITICAL_THRESHOLD:
-            probability = min(95, max(10, (f4_counter / pattern["avg_f4_before_reset"] * 80))) if pattern["avg_f4_before_reset"] > 0 else 0
             alerts["critical_alerts"].append({
                 "team": team,
                 "counter": f4_counter,
                 "type": "F!=4HA",
                 "level": "CRITICAL",
                 "message": f"🔴 {team}: F!=4HA counter = {f4_counter} (EXCEEDED {F4_CRITICAL_THRESHOLD} LIMIT!)",
-                "historical": pattern["prediction_f4"],
+                "type_a_alert": pattern["f4_type_a_alert"],
                 "avg_between": pattern["avg_f4_before_reset"],
-                "hit_rate": pattern["f4_hit_rate"],
-                "probability": probability
+                "hit_rate": pattern["f4_hit_rate"]
             })
         elif f4_counter >= F4_ALERT_THRESHOLD:
-            probability = min(95, max(10, (f4_counter / pattern["avg_f4_before_reset"] * 70))) if pattern["avg_f4_before_reset"] > 0 else 0
             alerts["f4_alerts"].append({
                 "team": team,
                 "counter": f4_counter,
                 "type": "F!=4HA",
                 "level": "WARNING",
                 "message": f"⚠️ {team}: F!=4HA counter = {f4_counter} (needs 4-goal match soon)",
-                "historical": pattern["prediction_f4"],
+                "type_a_alert": pattern["f4_type_a_alert"],
                 "avg_between": pattern["avg_f4_before_reset"],
-                "hit_rate": pattern["f4_hit_rate"],
-                "probability": probability
+                "hit_rate": pattern["f4_hit_rate"]
             })
         
         # Check Status3 alerts
         if s3_counter >= S3_CRITICAL_THRESHOLD:
-            probability = min(95, max(10, (s3_counter / pattern["avg_s3_before_reset"] * 75))) if pattern["avg_s3_before_reset"] > 0 else 0
             alerts["critical_alerts"].append({
                 "team": team,
                 "counter": s3_counter,
                 "type": "Status3",
                 "level": "CRITICAL",
                 "message": f"🔥 {team}: Status3 counter = {s3_counter} (EXCEEDED {S3_CRITICAL_THRESHOLD} LIMIT!)",
-                "historical": pattern["prediction_s3"],
+                "type_a_alert": pattern["s3_type_a_alert"],
                 "avg_between": pattern["avg_s3_before_reset"],
-                "hit_rate": pattern["s3_hit_rate"],
-                "probability": probability
+                "hit_rate": pattern["s3_hit_rate"]
             })
         elif s3_counter >= S3_ALERT_THRESHOLD:
-            probability = min(95, max(10, (s3_counter / pattern["avg_s3_before_reset"] * 65))) if pattern["avg_s3_before_reset"] > 0 else 0
             alerts["s3_alerts"].append({
                 "team": team,
                 "counter": s3_counter,
                 "type": "Status3",
                 "level": "WARNING",
                 "message": f"🎯 {team}: Status3 counter = {s3_counter} (due for 3+ goal match)",
-                "historical": pattern["prediction_s3"],
+                "type_a_alert": pattern["s3_type_a_alert"],
                 "avg_between": pattern["avg_s3_before_reset"],
-                "hit_rate": pattern["s3_hit_rate"],
-                "probability": probability
+                "hit_rate": pattern["s3_hit_rate"]
             })
     
     # Sort alerts by counter value (highest first)
@@ -905,10 +963,33 @@ else:
     # Main container
     st.markdown("<div class='custom-container'>", unsafe_allow_html=True)
     
-    st.markdown("<h1 class='main-header'>⚽ Complete Football Analytics Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-header'>⚽ Football Analytics Dashboard</h1>", unsafe_allow_html=True)
     
-    # ============ DATA INPUT SECTION ============
-    st.markdown("<h2 class='section-header'>📥 Data Input & Processing</h2>", unsafe_allow_html=True)
+    # ============ SHOW DASHBOARD STRUCTURE ============
+    st.markdown("""
+    <div class='dashboard-structure'>
+    <strong>📋 DASHBOARD STRUCTURE:</strong><br>
+    <div class='tree-node'>1. 📥 Data Input & Processing</div>
+    <div class='tree-node'>2. 📊 Season Dashboard (League Table)</div>
+    <div class='tree-node'>──────────────────────────────────────────</div>
+    <div class='tree-node'>3. 🚨 Counter Alert Dashboard ← <strong>ALERTS HERE!</strong></div>
+    <div class='tree-subnode'>├─ 🔴 CRITICAL ALERTS</div>
+    <div class='tree-subnode'>├─ ⚠️ F!=4HA Warnings (Counter ≥ 8)</div>
+    <div class='tree-subnode'>│   └─ [CLICK TO EXPAND] → Type A Alert inside!</div>
+    <div class='tree-subnode'>├─ 🎯 Status3 Warnings (Counter ≥ 7)</div>
+    <div class='tree-subnode'>│   └─ [CLICK TO EXPAND] → Type A Alert inside!</div>
+    <div class='tree-subnode last'>└─ 📊 Alert Summary</div>
+    <div class='tree-node'>──────────────────────────────────────────</div>
+    <div class='tree-node'>4. 📊 Team-Specific Counter Analysis</div>
+    <div class='tree-subnode last'>└─ Select team → See Type A Alerts!</div>
+    <div class='tree-node'>──────────────────────────────────────────</div>
+    <div class='tree-node'>5. 🎯 Match Predictor & Analytics</div>
+    <div class='tree-node last'>6. 💾 Data Management & Export</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # ============ 1. DATA INPUT & PROCESSING ============
+    st.markdown("<h2 class='section-header'>1. 📥 Data Input & Processing</h2>", unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
 
@@ -1115,13 +1196,13 @@ else:
         # Divider
         st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
         
-        # Row 1: League Table and Recent Matches
-        st.markdown("<h2 class='section-header'>📊 Season Dashboard</h2>", unsafe_allow_html=True)
+        # ============ 2. SEASON DASHBOARD (LEAGUE TABLE) ============
+        st.markdown("<h2 class='section-header'>2. 📊 Season Dashboard</h2>", unsafe_allow_html=True)
         
         col_league, col_recent = st.columns([2, 1])
         
         with col_league:
-            st.markdown(f"<h3 style='color: #1E3A8A; font-size: 1.5rem;'>🏆 Season {st.session_state.season_number} League Table</h3>", unsafe_allow_html=True)
+            st.markdown(f"<h3 class='subsection-header'>🏆 Season {st.session_state.season_number} League Table</h3>", unsafe_allow_html=True)
             rankings = calculate_rankings()
             
             table_data = []
@@ -1137,7 +1218,7 @@ else:
                 columns=["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts", "Form"]
             )
             
-            st.dataframe(league_df, use_container_width=True, height=500)
+            st.dataframe(league_df, use_container_width=True, height=400)
             
             # Quick league insights
             st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem; margin-top: 20px;'>📈 League Insights</h4>", unsafe_allow_html=True)
@@ -1164,7 +1245,7 @@ else:
                     st.metric("League Leader", top_scorer['Team'], f"{top_scorer['Pts']} Pts")
         
         with col_recent:
-            st.markdown("<h3 style='color: #1E3A8A; font-size: 1.5rem;'>🔄 Recent Match Summary</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 class='subsection-header'>🔄 Recent Match Summary</h3>", unsafe_allow_html=True)
             
             st.markdown("""
                 <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color:white; padding:20px; border-radius:15px; margin-bottom: 20px;">
@@ -1226,15 +1307,23 @@ else:
         # Divider
         st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
         
-        # ============ COUNTER ALERTS DASHBOARD ============
-        st.markdown("<h2 class='section-header'>🚨 Counter Alert Dashboard</h2>", unsafe_allow_html=True)
+        # ============ 3. COUNTER ALERT DASHBOARD ============
+        st.markdown("<h2 class='section-header'>3. 🚨 Counter Alert Dashboard</h2>", unsafe_allow_html=True)
+        
+        # Show dashboard structure reminder
+        st.markdown("""
+        <div class='alert-info'>
+        <strong>📌 ALERTS ARE HERE!</strong> This section shows Type A alerts for teams with high counters.<br>
+        Click on any warning to see the detailed Type A alert message.
+        </div>
+        """, unsafe_allow_html=True)
         
         # Get current alerts
         alerts = check_counter_alerts()
         
         # Display critical alerts first
         if alerts["critical_alerts"]:
-            st.markdown("<h3 style='color: #EF4444; font-size: 1.5rem;'>🔴 CRITICAL ALERTS (Exceeded Limits)</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 class='subsection-header'>🔴 CRITICAL ALERTS (Exceeded Limits)</h3>", unsafe_allow_html=True)
             for alert in alerts["critical_alerts"]:
                 with st.expander(f"{alert['message']}", expanded=True):
                     col1, col2 = st.columns([1, 2])
@@ -1244,78 +1333,97 @@ else:
                     with col2:
                         st.write(f"**Team:** {alert['team']}")
                         st.write(f"**Type:** {alert['type']}")
-                        st.write(f"**Historical Pattern:** {alert['historical']}")
                         st.write(f"**Hit Rate:** {alert['hit_rate']}% of matches")
-                        st.write(f"**Probability next match:** {alert['probability']:.0f}%")
-                        st.progress(alert['probability']/100)
+                        if alert['type_a_alert']:
+                            st.success(alert['type_a_alert'])
         
-        # Display warning alerts in columns with historical context
-        col_f4, col_s3 = st.columns(2)
+        # Display F!=4HA warnings
+        st.markdown(f"<h3 class='subsection-header'>⚠️ F!=4HA Warnings (Counter ≥ {F4_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
         
-        with col_f4:
-            if alerts["f4_alerts"]:
-                st.markdown(f"<h3 style='color: #F59E0B; font-size: 1.5rem;'>⚠️ F!=4HA Warnings (Counter ≥ {F4_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
-                for alert in alerts["f4_alerts"]:
-                    progress_value = min(1.0, alert['counter'] / 12)
-                    
-                    # Create expandable alert with historical context
-                    with st.expander(f"{alert['message']}", expanded=False):
+        if alerts["f4_alerts"]:
+            for alert in alerts["f4_alerts"]:
+                with st.expander(f"{alert['message']} - Click to expand for Type A Alert", expanded=False):
+                    col1, col2 = st.columns([1, 2])
+                    with col1:
+                        st.metric("Counter", alert['counter'])
+                        st.metric("Avg Interval", f"{alert['avg_between']} matches")
+                    with col2:
                         st.write(f"**Team:** {alert['team']}")
-                        st.write(f"**Current Counter:** {alert['counter']}")
-                        st.write(f"**Average between 4-goal matches:** {alert['avg_between']} matches")
                         st.write(f"**4-goal match rate:** {alert['hit_rate']}% of games")
-                        st.write(f"**Historical Prediction:**")
-                        st.info(f"📊 {alert['historical']}")
                         
-                        # Probability calculation
-                        st.write(f"**Probability of hitting 4 goals in next match:** {alert['probability']:.0f}%")
-                        st.progress(alert['probability']/100)
-                        
-                        # Type A Alert Example
-                        if alert['counter'] >= 9:
-                            type_a_prob = min(90, alert['probability'] + 20)
-                            st.success(f"🎯 **TYPE A ALERT:** {alert['team']} has F!=4HA counter at **{alert['counter']}**. Historical: They hit 4 goals within next 3 matches **{type_a_prob:.0f}%** of time.")
-                    
-                    st.progress(progress_value)
-            else:
-                st.markdown("<h3 style='color: #10B981; font-size: 1.5rem;'>✅ F!=4HA Status: All Normal</h3>", unsafe_allow_html=True)
-                st.info(f"No teams have F!=4HA counters ≥ {F4_ALERT_THRESHOLD}")
+                        # TYPE A ALERT - EXACTLY WHAT YOU WANTED
+                        if alert['type_a_alert']:
+                            st.markdown("---")
+                            st.markdown("### 🎯 **TYPE A ALERT**")
+                            st.success(alert['type_a_alert'])
+                            st.markdown("---")
+                        else:
+                            st.info("No historical data available for Type A prediction")
         
-        with col_s3:
-            if alerts["s3_alerts"]:
-                st.markdown(f"<h3 style='color: #3B82F6; font-size: 1.5rem;'>🎯 Status3 Warnings (Counter ≥ {S3_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
-                for alert in alerts["s3_alerts"]:
-                    progress_value = min(1.0, alert['counter'] / 11)
-                    
-                    # Create expandable alert with historical context
-                    with st.expander(f"{alert['message']}", expanded=False):
+            # Progress bars summary
+            for alert in alerts["f4_alerts"]:
+                progress_value = min(1.0, alert['counter'] / 12)
+                st.progress(progress_value, text=f"{alert['team']}: Counter = {alert['counter']}")
+        else:
+            st.info(f"✅ No teams have F!=4HA counters ≥ {F4_ALERT_THRESHOLD}")
+        
+        # Display Status3 warnings
+        st.markdown(f"<h3 class='subsection-header'>🎯 Status3 Warnings (Counter ≥ {S3_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
+        
+        if alerts["s3_alerts"]:
+            for alert in alerts["s3_alerts"]:
+                with st.expander(f"{alert['message']} - Click to expand for Type A Alert", expanded=False):
+                    col1, col2 = st.columns([1, 2])
+                    with col1:
+                        st.metric("Counter", alert['counter'])
+                        st.metric("Avg Interval", f"{alert['avg_between']} matches")
+                    with col2:
                         st.write(f"**Team:** {alert['team']}")
-                        st.write(f"**Current Counter:** {alert['counter']}")
-                        st.write(f"**Average between 3+ goal matches:** {alert['avg_between']} matches")
                         st.write(f"**3+ goal match rate:** {alert['hit_rate']}% of games")
-                        st.write(f"**Historical Prediction:**")
-                        st.info(f"📊 {alert['historical']}")
                         
-                        # Probability calculation
-                        st.write(f"**Probability of hitting 3+ goals in next match:** {alert['probability']:.0f}%")
-                        st.progress(alert['probability']/100)
-                        
-                        # Type A Alert Example for Status3
-                        if alert['counter'] >= 8:
-                            type_a_prob = min(85, alert['probability'] + 15)
-                            st.success(f"🎯 **TYPE A ALERT:** {alert['team']} has Status3 counter at **{alert['counter']}**. Historical: They hit 3+ goals within next 2 matches **{type_a_prob:.0f}%** of time.")
-                    
-                    st.progress(progress_value)
-            else:
-                st.markdown("<h3 style='color: #10B981; font-size: 1.5rem;'>✅ Status3 Status: All Normal</h3>", unsafe_allow_html=True)
-                st.info(f"No teams have Status3 counters ≥ {S3_ALERT_THRESHOLD}")
+                        # TYPE A ALERT - EXACTLY WHAT YOU WANTED
+                        if alert['type_a_alert']:
+                            st.markdown("---")
+                            st.markdown("### 🎯 **TYPE A ALERT**")
+                            st.success(alert['type_a_alert'])
+                            st.markdown("---")
+                        else:
+                            st.info("No historical data available for Type A prediction")
         
-        # Add a new section for Team-Specific Analysis
+            # Progress bars summary
+            for alert in alerts["s3_alerts"]:
+                progress_value = min(1.0, alert['counter'] / 11)
+                st.progress(progress_value, text=f"{alert['team']}: Counter = {alert['counter']}")
+        else:
+            st.info(f"✅ No teams have Status3 counters ≥ {S3_ALERT_THRESHOLD}")
+        
+        # Alert summary
+        st.markdown("<h3 class='subsection-header'>📊 Alert Summary</h3>", unsafe_allow_html=True)
+        summary_col1, summary_col2, summary_col3 = st.columns(3)
+        
+        with summary_col1:
+            st.metric("Critical Alerts", len(alerts["critical_alerts"]))
+        
+        with summary_col2:
+            st.metric("F!=4HA Warnings", len(alerts["f4_alerts"]))
+        
+        with summary_col3:
+            st.metric("Status3 Warnings", len(alerts["s3_alerts"]))
+        
+        # Divider
         st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
-        st.markdown("<h3 style='color: #1E3A8A; font-size: 1.5rem;'>📊 Team-Specific Counter Analysis</h3>", unsafe_allow_html=True)
+        
+        # ============ 4. TEAM-SPECIFIC COUNTER ANALYSIS ============
+        st.markdown("<h2 class='section-header'>4. 📊 Team-Specific Counter Analysis</h2>", unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class='alert-info'>
+        <strong>📌 SELECT ANY TEAM</strong> to see their detailed Type A alerts and historical patterns.
+        </div>
+        """, unsafe_allow_html=True)
         
         # Let user select a team for detailed analysis
-        selected_team = st.selectbox("Select a team for detailed counter analysis:", sorted(VALID_TEAMS))
+        selected_team = st.selectbox("**Select a team for detailed counter analysis:**", sorted(VALID_TEAMS))
         
         if selected_team:
             patterns = calculate_historical_patterns()
@@ -1327,67 +1435,18 @@ else:
                 st.markdown(f"#### F!=4HA Analysis for {selected_team}")
                 current_f4 = st.session_state.ha_counters[selected_team]
                 st.metric("Current Counter", current_f4)
-                st.metric("Average Between 4-goal Matches", f"{pattern['avg_f4_before_reset']} matches")
-                st.metric("Maximum Counter Recorded", pattern['max_f4_counter'])
-                st.metric("4-goal Match Rate", f"{pattern['f4_hit_rate']}%")
+                st.metric("Average Interval", f"{pattern['avg_f4_before_reset']} matches")
+                st.metric("Maximum Recorded", pattern['max_f4_counter'])
+                st.metric("Hit Rate", f"{pattern['f4_hit_rate']}%")
                 
-                # Type A Alert
-                st.write("**🎯 Type A Alert:**")
-                if current_f4 >= F4_ALERT_THRESHOLD:
-                    probability = min(95, max(10, (current_f4 / pattern['avg_f4_before_reset'] * 70))) if pattern['avg_f4_before_reset'] > 0 else 0
-                    type_a_prob = min(90, probability + 20)
-                    st.success(f"⚠️ **{selected_team}** has F!=4HA counter at **{current_f4}**. Historical: They hit 4 goals within next 3 matches **{type_a_prob:.0f}%** of time.")
+                # TYPE A ALERT DISPLAY
+                st.markdown("#### 🎯 Type A Alert")
+                if pattern['f4_type_a_alert']:
+                    st.success(pattern['f4_type_a_alert'])
+                elif current_f4 >= F4_ALERT_THRESHOLD:
+                    st.warning(f"⚠️ **{selected_team}** has F!=4HA counter at **{current_f4}** but insufficient historical data for Type A prediction.")
                 else:
                     st.info(pattern['prediction_f4'])
             
             with col_analysis2:
-                st.markdown(f"#### Status3 Analysis for {selected_team}")
-                current_s3 = st.session_state.status3_counters[selected_team]
-                st.metric("Current Counter", current_s3)
-                st.metric("Average Between 3+ goal Matches", f"{pattern['avg_s3_before_reset']} matches")
-                st.metric("Maximum Counter Recorded", pattern['max_s3_counter'])
-                st.metric("3+ goal Match Rate", f"{pattern['s3_hit_rate']}%")
-                
-                # Type A Alert
-                st.write("**🎯 Type A Alert:**")
-                if current_s3 >= S3_ALERT_THRESHOLD:
-                    probability = min(95, max(10, (current_s3 / pattern['avg_s3_before_reset'] * 65))) if pattern['avg_s3_before_reset'] > 0 else 0
-                    type_a_prob = min(85, probability + 15)
-                    st.success(f"🎯 **{selected_team}** has Status3 counter at **{current_s3}**. Historical: They hit 3+ goals within next 2 matches **{type_a_prob:.0f}%** of time.")
-                else:
-                    st.info(pattern['prediction_s3'])
-            
-            # Historical trend visualization
-            st.markdown("#### 📊 Historical Trend Analysis")
-            if pattern['total_matches_analyzed'] > 0:
-                st.write(f"Analyzed {pattern['total_matches_analyzed']} matches")
-                
-                # Create a simple trend analysis
-                trend_data = {
-                    "Metric": ["F!=4HA Pattern", "Status3 Pattern"],
-                    "Average Interval": [pattern['avg_f4_before_reset'], pattern['avg_s3_before_reset']],
-                    "Hit Rate": [f"{pattern['f4_hit_rate']}%", f"{pattern['s3_hit_rate']}%"],
-                    "Current Counter": [current_f4, current_s3],
-                    "Alert Status": [
-                        "🔴 CRITICAL" if current_f4 >= F4_CRITICAL_THRESHOLD else "⚠️ WARNING" if current_f4 >= F4_ALERT_THRESHOLD else "✅ Normal",
-                        "🔥 CRITICAL" if current_s3 >= S3_CRITICAL_THRESHOLD else "🎯 WARNING" if current_s3 >= S3_ALERT_THRESHOLD else "✅ Normal"
-                    ]
-                }
-                
-                trend_df = pd.DataFrame(trend_data)
-                st.dataframe(trend_df, use_container_width=True, hide_index=True)
-            else:
-                st.warning("Insufficient data for trend analysis")
-        
-        # Summary statistics
-        st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem; margin-top: 20px;'>📊 Alert Summary</h4>", unsafe_allow_html=True)
-        summary_col1, summary_col2, summary_col3 = st.columns(3)
-        
-        with summary_col1:
-            st.metric("Critical Alerts", len(alerts["critical_alerts"]))
-        
-        with summary_col2:
-            st.metric("F!=4HA Warnings", len(alerts["f4_alerts"]))
-        
-        with summary_col3:
-            st.metric("Status3 Warnings", len(alerts["s3_al
+                st.markdown(f"#### Status3 Analysis for {
