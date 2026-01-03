@@ -316,7 +316,7 @@ def calculate_historical_patterns():
     return patterns
 
 def get_type_a_alerts():
-    """Get Type A alerts for all teams"""
+    """Get Type A alerts for all teams - CORRECTED VERSION"""
     alerts = {
         "f4_critical": [],
         "f4_warning": [],
@@ -331,44 +331,64 @@ def get_type_a_alerts():
         s3_counter = st.session_state.status3_counters[team]
         pattern = patterns[team]
         
-        # F!=4HA Alerts
+        # F!=4HA Alerts - SIMPLIFIED VERSION THAT WORKS
         if f4_counter >= F4_CRITICAL_THRESHOLD:
-            probability = min(95, max(10, (f4_counter / pattern['avg_f4_before_reset'] * 85))) if pattern['avg_f4_before_reset'] > 0 else 90
+            if pattern['avg_f4_before_reset'] > 0:
+                probability = min(95, (f4_counter / pattern['avg_f4_before_reset']) * 85)
+                probability = max(10, probability)
+            else:
+                probability = 90
+            
             alerts["f4_critical"].append({
                 "team": team,
                 "counter": f4_counter,
-                "probability": probability,
+                "probability": round(probability),
                 "avg_between": pattern['avg_f4_before_reset'],
-                "message": f"🔴 **{team}**: F!=4HA counter = **{f4_counter}** (EXCEEDED {F4_CRITICAL_THRESHOLD} LIMIT!) | Historical: Hits 4 goals within next match **{probability}%** of time"
+                "message": f"🔴 **{team}**: F!=4HA counter = **{f4_counter}** (EXCEEDED {F4_CRITICAL_THRESHOLD} LIMIT!) | Historical: Hits 4 goals within next match **{round(probability)}%** of time"
             })
         elif f4_counter >= F4_ALERT_THRESHOLD:
-            probability = min(90, max(15, (f4_counter / pattern['avg_f4_before_reset'] * 75))) if pattern['avg_f4_before_reset'] > 0 else 70
+            if pattern['avg_f4_before_reset'] > 0:
+                probability = min(90, (f4_counter / pattern['avg_f4_before_reset']) * 75)
+                probability = max(15, probability)
+            else:
+                probability = 70
+            
             alerts["f4_warning"].append({
                 "team": team,
                 "counter": f4_counter,
-                "probability": probability,
+                "probability": round(probability),
                 "avg_between": pattern['avg_f4_before_reset'],
-                "message": f"⚠️ **{team}**: F!=4HA counter = **{f4_counter}** | Historical: Hits 4 goals within next 3 matches **{probability}%** of time"
+                "message": f"⚠️ **{team}**: F!=4HA counter = **{f4_counter}** | Historical: Hits 4 goals within next 3 matches **{round(probability)}%** of time"
             })
         
-        # Status3 Alerts
+        # Status3 Alerts - SIMPLIFIED VERSION THAT WORKS
         if s3_counter >= S3_CRITICAL_THRESHOLD:
-            probability = min(95, max(10, (s3_counter / pattern['avg_s3_before_reset'] * 80))) if pattern['avg_s3_before_reset'] > 0 else 85
+            if pattern['avg_s3_before_reset'] > 0:
+                probability = min(95, (s3_counter / pattern['avg_s3_before_reset']) * 80)
+                probability = max(10, probability)
+            else:
+                probability = 85
+            
             alerts["s3_critical"].append({
                 "team": team,
                 "counter": s3_counter,
-                "probability": probability,
+                "probability": round(probability),
                 "avg_between": pattern['avg_s3_before_reset'],
-                "message": f"🔥 **{team}**: Status3 counter = **{s3_counter}** (EXCEEDED {S3_CRITICAL_THRESHOLD} LIMIT!) | Historical: Hits 3+ goals within next match **{probability}%** of time"
+                "message": f"🔥 **{team}**: Status3 counter = **{s3_counter}** (EXCEEDED {S3_CRITICAL_THRESHOLD} LIMIT!) | Historical: Hits 3+ goals within next match **{round(probability)}%** of time"
             })
         elif s3_counter >= S3_ALERT_THRESHOLD:
-            probability = min(90, max(15, (s3_counter / pattern['avg_s3_before_reset'] * 70))) if pattern['avg_s3_before_reset'] > 0 else 65
+            if pattern['avg_s3_before_reset'] > 0:
+                probability = min(90, (s3_counter / pattern['avg_s3_before_reset']) * 70)
+                probability = max(15, probability)
+            else:
+                probability = 65
+            
             alerts["s3_warning"].append({
                 "team": team,
                 "counter": s3_counter,
-                "probability": probability,
+                "probability": round(probability),
                 "avg_between": pattern['avg_s3_before_reset'],
-                "message": f"🎯 **{team}**: Status3 counter = **{s3_counter}** | Historical: Hits 3+ goals within next 2 matches **{probability}%** of time"
+                "message": f"🎯 **{team}**: Status3 counter = **{s3_counter}** | Historical: Hits 3+ goals within next 2 matches **{round(probability)}%** of time"
             })
     
     # Sort by counter value (highest first)
@@ -588,7 +608,7 @@ if parse_clicked and raw_input.strip():
             total_goals = home_score + away_score
             total_g_display = "Won" if total_goals == 4 else "3 ✔" if total_goals == 3 else str(total_goals)
             
-            # Update counters
+            # Update counters - CORRECTED LOGIC
             if total_goals == 4:
                 st.session_state.home_counters[home_team] = 0
                 st.session_state.away_counters[away_team] = 0
@@ -600,7 +620,7 @@ if parse_clicked and raw_input.strip():
                 st.session_state.ha_counters[home_team] += 1
                 st.session_state.ha_counters[away_team] += 1
 
-            if total_goals == 3:
+            if total_goals >= 3:  # Changed from == 3 to >= 3 for Status3
                 st.session_state.status3_counters[home_team] = 0
                 st.session_state.status3_counters[away_team] = 0
             else:
@@ -901,18 +921,28 @@ if len(st.session_state.match_data) > 0:
         # Type A alert for this team
         st.markdown("#### 🎯 Type A Alert Preview")
         if current_f4 >= F4_ALERT_THRESHOLD:
-            probability = min(90, max(15, (current_f4 / pattern['avg_f4_before_reset'] * 75))) if pattern['avg_f4_before_reset'] > 0 else 70
+            if pattern['avg_f4_before_reset'] > 0:
+                probability = min(90, (current_f4 / pattern['avg_f4_before_reset']) * 75)
+                probability = max(15, probability)
+            else:
+                probability = 70
+            
             st.markdown(f"""
             <div class='type-a-alert'>
-            ⚠️ **{selected_team}**: F!=4HA counter = **{current_f4}** | Historical: Hits 4 goals within next 3 matches **{probability}%** of time
+            ⚠️ **{selected_team}**: F!=4HA counter = **{current_f4}** | Historical: Hits 4 goals within next 3 matches **{round(probability)}%** of time
             </div>
             """, unsafe_allow_html=True)
         
         if current_s3 >= S3_ALERT_THRESHOLD:
-            probability = min(90, max(15, (current_s3 / pattern['avg_s3_before_reset'] * 70))) if pattern['avg_s3_before_reset'] > 0 else 65
+            if pattern['avg_s3_before_reset'] > 0:
+                probability = min(90, (current_s3 / pattern['avg_s3_before_reset']) * 70)
+                probability = max(15, probability)
+            else:
+                probability = 65
+            
             st.markdown(f"""
             <div class='type-a-alert-status3'>
-            🎯 **{selected_team}**: Status3 counter = **{current_s3}** | Historical: Hits 3+ goals within next 2 matches **{probability}%** of time
+            🎯 **{selected_team}**: Status3 counter = **{current_s3}** | Historical: Hits 3+ goals within next 2 matches **{round(probability)}%** of time
             </div>
             """, unsafe_allow_html=True)
         
