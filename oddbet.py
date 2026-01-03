@@ -41,13 +41,38 @@ st.markdown("""
         margin: 1.5rem 0 1rem 0;
     }
     
-    .subsection-header {
-        color: #1E3A8A;
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 1.2rem 0 0.8rem 0;
-        padding-left: 15px;
-        border-left: 4px solid #3B82F6;
+    /* Type A Alert Boxes */
+    .type-a-alert {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #000;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+        border-left: 5px solid #FF8C00;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .type-a-alert-critical {
+        background: linear-gradient(135deg, #FF0000 0%, #DC143C 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+        border-left: 5px solid #8B0000;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .type-a-alert-status3 {
+        background: linear-gradient(135deg, #4169E1 0%, #1E90FF 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+        border-left: 5px solid #000080;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
     /* Buttons */
@@ -65,23 +90,6 @@ st.markdown("""
     .stButton > button:hover {
         transform: translateY(-3px);
         box-shadow: 0 7px 20px rgba(59, 130, 246, 0.3);
-    }
-    
-    /* Metrics */
-    [data-testid="stMetricValue"] {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #1E3A8A;
-    }
-    
-    [data-testid="stMetricLabel"] {
-        font-size: 1.1rem;
-        color: #6B7280;
-        font-weight: 600;
-    }
-    
-    [data-testid="stMetricDelta"] {
-        font-size: 0.9rem;
     }
     
     /* DataFrames */
@@ -105,173 +113,12 @@ st.markdown("""
         border-bottom: 1px solid #E5E7EB;
     }
     
-    .dataframe tr:hover {
-        background-color: #F9FAFB;
-    }
-    
-    /* Progress bars */
-    .stProgress > div > div {
-        background: linear-gradient(90deg, #1E3A8A, #3B82F6);
-        border-radius: 10px;
-    }
-    
-    /* Text areas */
-    .stTextArea textarea {
-        border-radius: 10px;
-        border: 2px solid #E5E7EB;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-    }
-    
-    /* Select boxes */
-    .stSelectbox > div > div {
-        border-radius: 10px;
-    }
-    
-    /* Alerts */
-    .stAlert {
-        border-radius: 10px;
-        border: none;
-        padding: 20px;
-    }
-    
-    .stAlert.stSuccess {
-        background: linear-gradient(90deg, #10B981, #34D399);
-        color: white;
-    }
-    
-    .stAlert.stWarning {
-        background: linear-gradient(90deg, #F59E0B, #FBBF24);
-        color: white;
-    }
-    
-    .stAlert.stError {
-        background: linear-gradient(90deg, #EF4444, #F87171);
-        color: white;
-    }
-    
-    .stAlert.stInfo {
-        background: linear-gradient(90deg, #3B82F6, #60A5FA);
-        color: white;
-    }
-    
-    /* Sidebar */
-    .css-1d391kg {
-        background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 100%);
-    }
-    
-    /* Counter displays */
-    .counter-box {
-        background: #F9FAFB;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px 0;
-        border-left: 5px solid #3B82F6;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-    }
-    
-    .counter-box strong {
-        color: #1E3A8A;
-        font-size: 16px;
-    }
-    
-    /* Recent matches display */
-    .match-row {
-        padding: 12px;
-        margin: 8px 0;
-        border-bottom: 1px solid #E5E7EB;
-        font-size: 14px;
-    }
-    
-    .match-row:last-child {
-        border-bottom: none;
-    }
-    
-    /* Footer */
-    .footer-text {
-        text-align: center;
-        color: #6B7280;
-        font-size: 0.9em;
-        padding: 20px;
-        margin-top: 30px;
-        border-top: 2px solid #E5E7EB;
-    }
-    
     /* Divider */
     .custom-divider {
         height: 3px;
         background: linear-gradient(90deg, #1E3A8A, #3B82F6);
         border-radius: 10px;
         margin: 30px 0;
-    }
-    
-    /* Alert boxes */
-    .alert-box {
-        padding: 15px;
-        border-radius: 10px;
-        margin: 10px 0;
-        border-left: 5px solid;
-    }
-    
-    .alert-critical {
-        background-color: #FEF2F2;
-        border-left-color: #EF4444;
-        color: #7F1D1D;
-    }
-    
-    .alert-warning {
-        background-color: #FFFBEB;
-        border-left-color: #F59E0B;
-        color: #78350F;
-    }
-    
-    .alert-info {
-        background-color: #EFF6FF;
-        border-left-color: #3B82F6;
-        color: #1E3A8A;
-    }
-    
-    /* Tree structure */
-    .tree-node {
-        padding-left: 20px;
-        margin: 5px 0;
-        position: relative;
-    }
-    
-    .tree-node::before {
-        content: "├─ ";
-        position: absolute;
-        left: 0;
-        color: #6B7280;
-    }
-    
-    .tree-node.last::before {
-        content: "└─ ";
-    }
-    
-    .tree-subnode {
-        padding-left: 40px;
-        margin: 3px 0;
-        position: relative;
-    }
-    
-    .tree-subnode::before {
-        content: "│  └─ ";
-        position: absolute;
-        left: 0;
-        color: #9CA3AF;
-    }
-    
-    /* Dashboard structure */
-    .dashboard-structure {
-        background: #F9FAFB;
-        border-radius: 10px;
-        padding: 20px;
-        margin: 15px 0;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        border: 1px solid #E5E7EB;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -290,7 +137,7 @@ F4_CRITICAL_THRESHOLD = 10  # Critical alert when reaches 10
 S3_ALERT_THRESHOLD = 7  # Warn when Status3 counter reaches 7
 S3_CRITICAL_THRESHOLD = 9  # Critical alert when reaches 9
 
-st.set_page_config(page_title="Football Analytics Dashboard", page_icon="⚽", layout="wide")
+st.set_page_config(page_title="Football Results Dashboard", page_icon="⚽", layout="wide")
 
 # ============ SESSION STATE INITIALIZATION ============
 if "match_data" not in st.session_state:
@@ -319,7 +166,6 @@ if "season_number" not in st.session_state:
 # ============ HELPER FUNCTIONS ============
 def reset_league_for_new_season():
     """Reset team statistics for a new season while preserving match history"""
-    # Reset team stats (current season only) - KEEP match_data for CSV exports
     st.session_state.team_stats = {
         team: {
             "P": 0, "W": 0, "D": 0, "L": 0,
@@ -328,13 +174,11 @@ def reset_league_for_new_season():
         for team in VALID_TEAMS
     }
     
-    # Reset counters for new season
     st.session_state.home_counters = {team: 0 for team in VALID_TEAMS}
     st.session_state.away_counters = {team: 0 for team in VALID_TEAMS}
     st.session_state.ha_counters = {team: 0 for team in VALID_TEAMS}
     st.session_state.status3_counters = {team: 0 for team in VALID_TEAMS}
     
-    # Increment season number
     st.session_state.season_number += 1
     st.session_state.match_counter = 1
     
@@ -381,10 +225,8 @@ def calculate_team_metrics():
         avg_gf = stats["GF"] / total_matches if total_matches > 0 else 0
         avg_ga = stats["GA"] / total_matches if total_matches > 0 else 0
         
-        # Calculate actual Both Teams Scored rate from match data
         bts_matches = 0
         for match in st.session_state.match_data:
-            # Check if this team was involved and both teams scored
             if (match[1] == team and match[2] > 0 and match[3] > 0) or \
                (match[4] == team and match[2] > 0 and match[3] > 0):
                 bts_matches += 1
@@ -409,13 +251,12 @@ def calculate_historical_patterns():
     patterns = {}
     
     for team in VALID_TEAMS:
-        # Get all matches involving this team
         team_matches = []
         for match in st.session_state.match_data:
             if match[1] == team or match[4] == team:
                 team_matches.append(match)
         
-        if len(team_matches) < 5:  # Need minimum data
+        if len(team_matches) < 3:
             patterns[team] = {
                 "avg_f4_before_reset": 0,
                 "max_f4_counter": 0,
@@ -423,30 +264,23 @@ def calculate_historical_patterns():
                 "max_s3_counter": 0,
                 "f4_hit_rate": 0,
                 "s3_hit_rate": 0,
-                "prediction_f4": "Insufficient data",
-                "prediction_s3": "Insufficient data",
-                "f4_type_a_alert": "",
-                "s3_type_a_alert": ""
+                "total_matches": len(team_matches)
             }
             continue
         
-        # Analyze F!=4HA patterns
         f4_counters_before_reset = []
         current_f4_streak = 0
         f4_hit_count = 0
         max_f4_counter = 0
         
-        # Analyze Status3 patterns
         s3_counters_before_reset = []
         current_s3_streak = 0
         s3_hit_count = 0
         max_s3_counter = 0
         
-        # Track through matches
         for match in team_matches:
-            total_goals = match[5]  # Total_Goals column
+            total_goals = match[5]
             
-            # Check F!=4HA (4 goals total)
             if total_goals == 4:
                 f4_counters_before_reset.append(current_f4_streak)
                 f4_hit_count += 1
@@ -455,7 +289,6 @@ def calculate_historical_patterns():
                 current_f4_streak += 1
                 max_f4_counter = max(max_f4_counter, current_f4_streak)
             
-            # Check Status3 (3+ goals total)
             if total_goals >= 3:
                 s3_counters_before_reset.append(current_s3_streak)
                 s3_hit_count += 1
@@ -464,50 +297,11 @@ def calculate_historical_patterns():
                 current_s3_streak += 1
                 max_s3_counter = max(max_s3_counter, current_s3_streak)
         
-        # Calculate averages
         avg_f4 = sum(f4_counters_before_reset) / len(f4_counters_before_reset) if f4_counters_before_reset else 0
         avg_s3 = sum(s3_counters_before_reset) / len(s3_counters_before_reset) if s3_counters_before_reset else 0
         
-        # Calculate hit rates (per match)
         f4_hit_rate = (f4_hit_count / len(team_matches) * 100) if team_matches else 0
         s3_hit_rate = (s3_hit_count / len(team_matches) * 100) if team_matches else 0
-        
-        # Current counters
-        current_f4 = st.session_state.ha_counters[team]
-        current_s3 = st.session_state.status3_counters[team]
-        
-        # Generate TYPE A ALERTS
-        f4_type_a_alert = ""
-        s3_type_a_alert = ""
-        
-        if current_f4 >= F4_ALERT_THRESHOLD and avg_f4 > 0:
-            probability = min(95, max(10, (current_f4 / avg_f4) * 70))
-            f4_type_a_alert = f"⚠️ **{team} has F!=4HA counter at {current_f4}.** Historical: They hit 4 goals within next 3 matches **{probability:.0f}%** of time."
-        
-        if current_s3 >= S3_ALERT_THRESHOLD and avg_s3 > 0:
-            probability = min(95, max(10, (current_s3 / avg_s3) * 65))
-            s3_type_a_alert = f"🎯 **{team} has Status3 counter at {current_s3}.** Historical: They hit 3+ goals within next 2 matches **{probability:.0f}%** of time."
-        
-        # Regular predictions
-        if f4_hit_rate > 0:
-            if current_f4 >= max_f4_counter * 0.8:
-                pred_f4 = f"CRITICAL: Usually hits 4 goals every {avg_f4:.1f} matches (now at {current_f4})"
-            elif current_f4 >= avg_f4:
-                pred_f4 = f"HIGH PROBABILITY: Due for 4 goals (average: {avg_f4:.1f} matches between 4-goal games)"
-            else:
-                pred_f4 = f"NORMAL: On track (average: {avg_f4:.1f} matches between 4-goal games)"
-        else:
-            pred_f4 = "Rarely hits 4 goals"
-        
-        if s3_hit_rate > 0:
-            if current_s3 >= max_s3_counter * 0.8:
-                pred_s3 = f"CRITICAL: Usually hits 3+ goals every {avg_s3:.1f} matches (now at {current_s3})"
-            elif current_s3 >= avg_s3:
-                pred_s3 = f"HIGH PROBABILITY: Due for 3+ goals (average: {avg_s3:.1f} matches between 3+ goal games)"
-            else:
-                pred_s3 = f"NORMAL: On track (average: {avg_s3:.1f} matches between 3+ goal games)"
-        else:
-            pred_s3 = "Rarely hits 3+ goals"
         
         patterns[team] = {
             "avg_f4_before_reset": round(avg_f4, 1),
@@ -516,203 +310,72 @@ def calculate_historical_patterns():
             "max_s3_counter": max_s3_counter,
             "f4_hit_rate": round(f4_hit_rate, 1),
             "s3_hit_rate": round(s3_hit_rate, 1),
-            "prediction_f4": pred_f4,
-            "prediction_s3": pred_s3,
-            "f4_type_a_alert": f4_type_a_alert,
-            "s3_type_a_alert": s3_type_a_alert,
-            "total_matches_analyzed": len(team_matches)
+            "total_matches": len(team_matches)
         }
     
     return patterns
 
-def predict_match_outcome(home_team, away_team, team_metrics):
-    """Predict match outcome probabilities"""
-    
-    home_metrics = team_metrics[home_team]
-    away_metrics = team_metrics[away_team]
-    
-    # Base probabilities from win rates
-    home_win_prob = home_metrics["win_rate"] * (1 - away_metrics["win_rate"] / 100)
-    away_win_prob = away_metrics["win_rate"] * (1 - home_metrics["win_rate"] / 100)
-    draw_prob = (home_metrics["draw_rate"] + away_metrics["draw_rate"]) / 2
-    
-    # Adjust for home advantage
-    home_advantage = 15  # percentage points
-    home_win_prob += home_advantage
-    away_win_prob = max(0, away_win_prob - home_advantage * 0.5)
-    
-    # Normalize to 100%
-    total = home_win_prob + away_win_prob + draw_prob
-    if total > 0:
-        home_win_prob = (home_win_prob / total * 100)
-        away_win_prob = (away_win_prob / total * 100)
-        draw_prob = (draw_prob / total * 100)
-    else:
-        home_win_prob = draw_prob = away_win_prob = 33.3
-    
-    # Calculate over/under probabilities
-    total_goals_expected = home_metrics["avg_gf"] + away_metrics["avg_gf"]
-    
-    over_2_5_prob = min(90, max(10, (total_goals_expected - 1.5) * 30))
-    over_3_5_prob = min(70, max(5, (total_goals_expected - 2.5) * 25))
-    over_4_5_prob = min(50, max(2, (total_goals_expected - 3.5) * 20))
-    
-    # Both teams score probability
-    both_teams_score_prob = (home_metrics["bts_rate"] + away_metrics["bts_rate"]) / 2
-    
-    # FIX: Ensure all probabilities are within 0-100 range
-    home_win_prob = max(0, min(100, home_win_prob))
-    away_win_prob = max(0, min(100, away_win_prob))
-    draw_prob = max(0, min(100, draw_prob))
-    over_2_5_prob = max(0, min(100, over_2_5_prob))
-    over_3_5_prob = max(0, min(100, over_3_5_prob))
-    over_4_5_prob = max(0, min(100, over_4_5_prob))
-    both_teams_score_prob = max(0, min(100, both_teams_score_prob))
-    
-    return {
-        "home_win": round(home_win_prob, 1),
-        "away_win": round(away_win_prob, 1),
-        "draw": round(draw_prob, 1),
-        "over_2_5": round(over_2_5_prob, 1),
-        "over_3_5": round(over_3_5_prob, 1),
-        "over_4_5": round(over_4_5_prob, 1),
-        "both_teams_score": round(both_teams_score_prob, 1),
-        "expected_goals": round(total_goals_expected, 2),
-        "predicted_score": f"{round(home_metrics['avg_gf'], 1)}-{round(away_metrics['avg_gf'], 1)}"
-    }
-
-def create_head_to_head_stats(home_team, away_team):
-    """Calculate head-to-head statistics"""
-    if len(st.session_state.match_data) == 0:
-        return None
-    
-    h2h_matches = []
-    for match in st.session_state.match_data:
-        if (match[1] == home_team and match[4] == away_team) or \
-           (match[1] == away_team and match[4] == home_team):
-            h2h_matches.append(match)
-    
-    if not h2h_matches:
-        return None
-    
-    stats = {
-        "total_matches": len(h2h_matches),
-        "home_wins": 0,
-        "away_wins": 0,
-        "draws": 0,
-        "avg_goals": 0,
-        "over_2_5": 0,
-        "over_3_5": 0,
-        "both_teams_score": 0
+def get_type_a_alerts():
+    """Get Type A alerts for all teams"""
+    alerts = {
+        "f4_critical": [],
+        "f4_warning": [],
+        "s3_critical": [],
+        "s3_warning": []
     }
     
-    total_goals = 0
-    for match in h2h_matches:
-        home_score = match[2]
-        away_score = match[3]
-        total_goals += home_score + away_score
+    patterns = calculate_historical_patterns()
+    
+    for team in VALID_TEAMS:
+        f4_counter = st.session_state.ha_counters[team]
+        s3_counter = st.session_state.status3_counters[team]
+        pattern = patterns[team]
         
-        if match[1] == home_team:
-            if home_score > away_score:
-                stats["home_wins"] += 1
-            elif away_score > home_score:
-                stats["away_wins"] += 1
-            else:
-                stats["draws"] += 1
-        else:
-            if away_score > home_score:
-                stats["home_wins"] += 1
-            elif home_score > away_score:
-                stats["away_wins"] += 1
-            else:
-                stats["draws"] += 1
+        # F!=4HA Alerts
+        if f4_counter >= F4_CRITICAL_THRESHOLD:
+            probability = min(95, max(10, (f4_counter / pattern['avg_f4_before_reset'] * 85))) if pattern['avg_f4_before_reset'] > 0 else 90
+            alerts["f4_critical"].append({
+                "team": team,
+                "counter": f4_counter,
+                "probability": probability,
+                "avg_between": pattern['avg_f4_before_reset'],
+                "message": f"🔴 **{team}**: F!=4HA counter = **{f4_counter}** (EXCEEDED {F4_CRITICAL_THRESHOLD} LIMIT!) | Historical: Hits 4 goals within next match **{probability}%** of time"
+            })
+        elif f4_counter >= F4_ALERT_THRESHOLD:
+            probability = min(90, max(15, (f4_counter / pattern['avg_f4_before_reset'] * 75))) if pattern['avg_f4_before_reset'] > 0 else 70
+            alerts["f4_warning"].append({
+                "team": team,
+                "counter": f4_counter,
+                "probability": probability,
+                "avg_between": pattern['avg_f4_before_reset'],
+                "message": f"⚠️ **{team}**: F!=4HA counter = **{f4_counter}** | Historical: Hits 4 goals within next 3 matches **{probability}%** of time"
+            })
         
-        if home_score + away_score > 2.5:
-            stats["over_2_5"] += 1
-        if home_score + away_score > 3.5:
-            stats["over_3_5"] += 1
-        if home_score > 0 and away_score > 0:
-            stats["both_teams_score"] += 1
+        # Status3 Alerts
+        if s3_counter >= S3_CRITICAL_THRESHOLD:
+            probability = min(95, max(10, (s3_counter / pattern['avg_s3_before_reset'] * 80))) if pattern['avg_s3_before_reset'] > 0 else 85
+            alerts["s3_critical"].append({
+                "team": team,
+                "counter": s3_counter,
+                "probability": probability,
+                "avg_between": pattern['avg_s3_before_reset'],
+                "message": f"🔥 **{team}**: Status3 counter = **{s3_counter}** (EXCEEDED {S3_CRITICAL_THRESHOLD} LIMIT!) | Historical: Hits 3+ goals within next match **{probability}%** of time"
+            })
+        elif s3_counter >= S3_ALERT_THRESHOLD:
+            probability = min(90, max(15, (s3_counter / pattern['avg_s3_before_reset'] * 70))) if pattern['avg_s3_before_reset'] > 0 else 65
+            alerts["s3_warning"].append({
+                "team": team,
+                "counter": s3_counter,
+                "probability": probability,
+                "avg_between": pattern['avg_s3_before_reset'],
+                "message": f"🎯 **{team}**: Status3 counter = **{s3_counter}** | Historical: Hits 3+ goals within next 2 matches **{probability}%** of time"
+            })
     
-    stats["avg_goals"] = round(total_goals / len(h2h_matches), 2)
-    stats["over_2_5_pct"] = round(stats["over_2_5"] / len(h2h_matches) * 100, 1)
-    stats["over_3_5_pct"] = round(stats["over_3_5"] / len(h2h_matches) * 100, 1)
-    stats["both_teams_score_pct"] = round(stats["both_teams_score"] / len(h2h_matches) * 100, 1)
+    # Sort by counter value (highest first)
+    for key in alerts:
+        alerts[key].sort(key=lambda x: x["counter"], reverse=True)
     
-    return stats
-
-def generate_betting_recommendations(home_team, away_team, predictions, team_metrics, h2h_stats):
-    """Generate betting recommendations based on analysis"""
-    
-    home_metrics = team_metrics[home_team]
-    away_metrics = team_metrics[away_team]
-    
-    recommendations = {
-        "best_bets": [],
-        "avoid_bets": [],
-        "insights": []
-    }
-    
-    # 1. Both Teams to Score analysis
-    bts_prob = predictions['both_teams_score']
-    if bts_prob >= 50:
-        reason = f"{home_team} leaks goals ({home_metrics['avg_ga']} GA/game) | "
-        reason += f"{away_team} can score ({away_metrics['avg_gf']} GF/game)"
-        if h2h_stats and h2h_stats['both_teams_score_pct'] >= 70:
-            reason += f" | Historical: {h2h_stats['both_teams_score_pct']}% both teams scored"
-        recommendations["best_bets"].append(("Both Teams to Score: YES", reason))
-    else:
-        recommendations["avoid_bets"].append("Both Teams to Score")
-    
-    # 2. Double Chance (Home Win or Draw)
-    home_win_or_draw = predictions['home_win'] + predictions['draw']
-    if home_win_or_draw >= 65:
-        reason = f"{home_win_or_draw}% probability | Covers both likely outcomes"
-        recommendations["best_bets"].append((f"{home_team} or Draw (Double Chance)", reason))
-    
-    # 3. Under/Over markets
-    if predictions['over_2_5'] < 50:
-        under_prob = 100 - predictions['over_2_5']
-        reason = f"{under_prob}% probability | "
-        reason += f"{away_team}'s defense ({away_metrics['avg_ga']} GA) considered"
-        recommendations["best_bets"].append(("Under 2.5 Goals", reason))
-    else:
-        reason = f"{predictions['over_2_5']}% probability | High expected goals ({predictions['expected_goals']})"
-        recommendations["best_bets"].append(("Over 2.5 Goals", reason))
-    
-    # 4. Clean Sheet analysis
-    if home_metrics['avg_ga'] > 1.4:
-        reason = f"Poor defense ({home_metrics['avg_ga']} GA/game) | Rarely keeps clean sheets"
-        recommendations["avoid_bets"].append(f"{home_team} to Win to Nil (Clean Sheet)")
-    
-    # 5. High over markets
-    if predictions['over_3_5'] < 25:
-        reason = f"Only {predictions['over_3_5']}% probability | Low scoring teams"
-        recommendations["avoid_bets"].append("Over 3.5 Goals")
-    
-    if predictions['over_4_5'] < 10:
-        recommendations["avoid_bets"].append("Over 4.5 Goals")
-    
-    # Add insights
-    if home_metrics['avg_gf'] > away_metrics['avg_gf']:
-        recommendations["insights"].append(f"{home_team} has better attack ({home_metrics['avg_gf']} vs {away_metrics['avg_gf']} GF/game)")
-    else:
-        recommendations["insights"].append(f"{away_team} has better attack ({away_metrics['avg_gf']} vs {home_metrics['avg_gf']} GF/game)")
-    
-    if away_metrics['avg_ga'] < home_metrics['avg_ga']:
-        recommendations["insights"].append(f"{away_team} has better defense ({away_metrics['avg_ga']} vs {home_metrics['avg_ga']} GA/game)")
-    else:
-        recommendations["insights"].append(f"{home_team} has better defense ({home_metrics['avg_ga']} vs {away_metrics['avg_ga']} GA/game)")
-    
-    if h2h_stats and h2h_stats['total_matches'] > 0:
-        if h2h_stats['home_wins'] == 0 and h2h_stats['away_wins'] == 0:
-            recommendations["insights"].append(f"Historical trend: {h2h_stats['draws']}/{h2h_stats['total_matches']} matches ended in draw")
-        elif h2h_stats['home_wins'] > h2h_stats['away_wins'] * 2:
-            recommendations["insights"].append(f"Strong historical advantage for {home_team}")
-        elif h2h_stats['away_wins'] > h2h_stats['home_wins'] * 2:
-            recommendations["insights"].append(f"Strong historical advantage for {away_team}")
-    
-    return recommendations
+    return alerts
 
 def clean_and_parse_matches(text: str):
     """Clean messy input data and parse matches"""
@@ -774,77 +437,6 @@ def clean_and_parse_matches(text: str):
     matches.reverse()
     return matches, errors, cleaned_lines
 
-def check_counter_alerts():
-    """Check all teams for counter alerts and return alerts dictionary"""
-    alerts = {
-        "f4_alerts": [],  # Teams with high F!=4HA counters
-        "s3_alerts": [],  # Teams with high Status3 counters
-        "critical_alerts": []  # Teams exceeding critical thresholds
-    }
-    
-    # Get historical patterns
-    patterns = calculate_historical_patterns()
-    
-    for team in VALID_TEAMS:
-        f4_counter = st.session_state.ha_counters[team]
-        s3_counter = st.session_state.status3_counters[team]
-        pattern = patterns[team]
-        
-        # Check F!=4HA alerts
-        if f4_counter >= F4_CRITICAL_THRESHOLD:
-            alerts["critical_alerts"].append({
-                "team": team,
-                "counter": f4_counter,
-                "type": "F!=4HA",
-                "level": "CRITICAL",
-                "message": f"🔴 {team}: F!=4HA counter = {f4_counter} (EXCEEDED {F4_CRITICAL_THRESHOLD} LIMIT!)",
-                "type_a_alert": pattern["f4_type_a_alert"],
-                "avg_between": pattern["avg_f4_before_reset"],
-                "hit_rate": pattern["f4_hit_rate"]
-            })
-        elif f4_counter >= F4_ALERT_THRESHOLD:
-            alerts["f4_alerts"].append({
-                "team": team,
-                "counter": f4_counter,
-                "type": "F!=4HA",
-                "level": "WARNING",
-                "message": f"⚠️ {team}: F!=4HA counter = {f4_counter} (needs 4-goal match soon)",
-                "type_a_alert": pattern["f4_type_a_alert"],
-                "avg_between": pattern["avg_f4_before_reset"],
-                "hit_rate": pattern["f4_hit_rate"]
-            })
-        
-        # Check Status3 alerts
-        if s3_counter >= S3_CRITICAL_THRESHOLD:
-            alerts["critical_alerts"].append({
-                "team": team,
-                "counter": s3_counter,
-                "type": "Status3",
-                "level": "CRITICAL",
-                "message": f"🔥 {team}: Status3 counter = {s3_counter} (EXCEEDED {S3_CRITICAL_THRESHOLD} LIMIT!)",
-                "type_a_alert": pattern["s3_type_a_alert"],
-                "avg_between": pattern["avg_s3_before_reset"],
-                "hit_rate": pattern["s3_hit_rate"]
-            })
-        elif s3_counter >= S3_ALERT_THRESHOLD:
-            alerts["s3_alerts"].append({
-                "team": team,
-                "counter": s3_counter,
-                "type": "Status3",
-                "level": "WARNING",
-                "message": f"🎯 {team}: Status3 counter = {s3_counter} (due for 3+ goal match)",
-                "type_a_alert": pattern["s3_type_a_alert"],
-                "avg_between": pattern["avg_s3_before_reset"],
-                "hit_rate": pattern["s3_hit_rate"]
-            })
-    
-    # Sort alerts by counter value (highest first)
-    alerts["f4_alerts"].sort(key=lambda x: x["counter"], reverse=True)
-    alerts["s3_alerts"].sort(key=lambda x: x["counter"], reverse=True)
-    alerts["critical_alerts"].sort(key=lambda x: x["counter"], reverse=True)
-    
-    return alerts
-
 def get_alert_symbols_and_reason(f4_counter, s3_counter):
     """Generate alert symbols and reason text for a team"""
     f4_alert = ""
@@ -869,7 +461,7 @@ def get_alert_symbols_and_reason(f4_counter, s3_counter):
     
     return f4_alert, s3_alert, alert_reason
 
-# ============ SIDEBAR NAVIGATION ============
+# ============ SIDEBAR ============
 st.sidebar.markdown("""
 <div style='padding: 20px; background: linear-gradient(180deg, #1E3A8A 0%, #3B82F6 100%); border-radius: 10px; color: white;'>
 <h3 style='color: white;'>🎯 Navigation</h3>
@@ -879,7 +471,6 @@ st.sidebar.markdown("""
 page = st.sidebar.selectbox("", ["Main Dashboard", "Counter Logic Dashboard"])
 
 st.sidebar.markdown("---")
-
 st.sidebar.markdown("""
 <div style='padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
 <h4 style='color: #1E3A8A;'>📊 Quick Stats</h4>
@@ -891,562 +482,546 @@ if len(st.session_state.match_data) > 0:
     st.sidebar.metric("Matches This Season", len(current_season_matches))
     st.sidebar.metric("Total Matches", len(st.session_state.match_data))
     
-    # Show alert count in sidebar
-    alerts = check_counter_alerts()
-    total_alerts = len(alerts["critical_alerts"]) + len(alerts["f4_alerts"]) + len(alerts["s3_alerts"])
-    st.sidebar.metric("Active Alerts", total_alerts)
+    # Get alert count
+    alerts = get_type_a_alerts()
+    total_alerts = len(alerts["f4_critical"]) + len(alerts["f4_warning"]) + len(alerts["s3_critical"]) + len(alerts["s3_warning"])
+    st.sidebar.metric("Type A Alerts", total_alerts)
 else:
     st.sidebar.info("No matches yet")
 
 st.sidebar.markdown("</div>", unsafe_allow_html=True)
 
-# ============ COUNTER LOGIC DASHBOARD ============
+# ============ MAIN DASHBOARD ============
+st.markdown("<div class='custom-container'>", unsafe_allow_html=True)
+
 if page == "Counter Logic Dashboard":
-    # Main container
-    st.markdown("<div class='custom-container'>", unsafe_allow_html=True)
-    
     st.markdown("<h1 class='main-header'>Counter Logic Dashboard</h1>", unsafe_allow_html=True)
     st.markdown("<h3 class='section-header'>FI=4HA & Status3 (Last 10 Matches)</h3>", unsafe_allow_html=True)
     
-    st.markdown("""
-    <div style='background: #F9FAFB; padding: 20px; border-radius: 10px; margin-bottom: 25px;'>
-    <p style='font-size: 16px; color: #4B5563;'>
-    This view shows the <strong>FI=4HA</strong> and <strong>Status3</strong> outputs for the <strong>last 10 matches</strong>.<br>
-    Shows most recent matches first.
-    </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
     if len(st.session_state.match_data) == 0:
-        st.info("No matches available yet. Add matches from the Main Dashboard to populate these counters.")
+        st.info("No matches available yet.")
     else:
-        # Get last 10 matches (most recent first)
-        last_10_matches = st.session_state.match_data[-10:][::-1]  # Get last 10, then reverse to show newest first
-        
-        # Prepare display rows
+        last_10_matches = st.session_state.match_data[-10:][::-1]
         left_col, right_col = st.columns(2)
         
         with left_col:
-            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.4rem; margin-bottom: 15px;'>📊 FI=4HA (Last 10 Matches)</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color: #1E3A8A;'>📊 FI=4HA (Last 10 Matches)</h4>", unsafe_allow_html=True)
             for m in last_10_matches:
-                home = m[1] if len(m) > 1 else ""
-                home_score = m[2] if len(m) > 2 else ""
-                away_score = m[3] if len(m) > 3 else ""
-                away = m[4] if len(m) > 4 else ""
-                fi_display = m[19] if len(m) > 19 else f"{home}: {st.session_state.ha_counters.get(home,0)} | {away}: {st.session_state.ha_counters.get(away,0)}"
-                st.markdown(f"""
-                <div class='counter-box'>
-                <strong>{home}</strong> {home_score}-{away_score} <strong>{away}</strong><br>
-                <small>{fi_display}</small>
-                </div>
-                """, unsafe_allow_html=True)
+                home = m[1]
+                away = m[4]
+                home_score = m[2]
+                away_score = m[3]
+                fi_display = m[19] if len(m) > 19 else ""
+                st.markdown(f"**{home}** {home_score}-{away_score} **{away}**<br><small>{fi_display}</small>", unsafe_allow_html=True)
         
         with right_col:
-            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.4rem; margin-bottom: 15px;'>📈 Status3 (Last 10 Matches)</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color: #1E3A8A;'>📈 Status3 (Last 10 Matches)</h4>", unsafe_allow_html=True)
             for m in last_10_matches:
-                home = m[1] if len(m) > 1 else ""
-                home_score = m[2] if len(m) > 2 else ""
-                away_score = m[3] if len(m) > 3 else ""
-                away = m[4] if len(m) > 4 else ""
-                s3_display = m[20] if len(m) > 20 else f"{home}: {st.session_state.status3_counters.get(home,0)} | {away}: {st.session_state.status3_counters.get(away,0)}"
-                st.markdown(f"""
-                <div class='counter-box'>
-                <strong>{home}</strong> {home_score}-{away_score} <strong>{away}</strong><br>
-                <small>{s3_display}</small>
-                </div>
-                """, unsafe_allow_html=True)
+                home = m[1]
+                away = m[4]
+                home_score = m[2]
+                away_score = m[3]
+                s3_display = m[20] if len(m) > 20 else ""
+                st.markdown(f"**{home}** {home_score}-{away_score} **{away}**<br><small>{s3_display}</small>", unsafe_allow_html=True)
     
     st.markdown("</div>", unsafe_allow_html=True)
+    st.stop()
 
-# ============ MAIN DASHBOARD ============
-else:
-    # Main container
-    st.markdown("<div class='custom-container'>", unsafe_allow_html=True)
-    
-    st.markdown("<h1 class='main-header'>⚽ Football Analytics Dashboard</h1>", unsafe_allow_html=True)
-    
-    # ============ SHOW DASHBOARD STRUCTURE ============
-    st.markdown("""
-    <div class='dashboard-structure'>
-    <strong>📋 DASHBOARD STRUCTURE:</strong><br>
-    <div class='tree-node'>1. 📥 Data Input & Processing</div>
-    <div class='tree-node'>2. 📊 Season Dashboard (League Table)</div>
-    <div class='tree-node'>──────────────────────────────────────────</div>
-    <div class='tree-node'>3. 🚨 Counter Alert Dashboard ← <strong>ALERTS HERE!</strong></div>
-    <div class='tree-subnode'>├─ 🔴 CRITICAL ALERTS</div>
-    <div class='tree-subnode'>├─ ⚠️ F!=4HA Warnings (Counter ≥ 8)</div>
-    <div class='tree-subnode'>│   └─ [CLICK TO EXPAND] → Type A Alert inside!</div>
-    <div class='tree-subnode'>├─ 🎯 Status3 Warnings (Counter ≥ 7)</div>
-    <div class='tree-subnode'>│   └─ [CLICK TO EXPAND] → Type A Alert inside!</div>
-    <div class='tree-subnode last'>└─ 📊 Alert Summary</div>
-    <div class='tree-node'>──────────────────────────────────────────</div>
-    <div class='tree-node'>4. 📊 Team-Specific Counter Analysis</div>
-    <div class='tree-subnode last'>└─ Select team → See Type A Alerts!</div>
-    <div class='tree-node'>──────────────────────────────────────────</div>
-    <div class='tree-node'>5. 🎯 Match Predictor & Analytics</div>
-    <div class='tree-node last'>6. 💾 Data Management & Export</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # ============ 1. DATA INPUT & PROCESSING ============
-    st.markdown("<h2 class='section-header'>1. 📥 Data Input & Processing</h2>", unsafe_allow_html=True)
-    
-    col1, col2 = st.columns([2, 1])
+# ============ MAIN DASHBOARD LAYOUT ============
+st.markdown("<h1 class='main-header'>⚽ Football Analytics Dashboard</h1>", unsafe_allow_html=True)
 
-    with col1:
-        raw_input = st.text_area(
-            "**Paste match data** (with dates/times - will be cleaned automatically)", 
-            height=150,
-            placeholder="Paste your messy data here, e.g.:\nAston V\n1\n2\nSheffield U\nEnglish League WEEK 17 - #2025122312\n3:58 pm\nSouthampton\n2\n0\nEverton\n..."
-        )
-        
-        parse_clicked = st.button("🚀 Parse and Add Matches", type="primary", use_container_width=True)
+# 1. 📥 DATA INPUT & PROCESSING
+st.markdown("<h2 class='section-header'>1. 📥 Data Input & Processing</h2>", unsafe_allow_html=True)
 
-    with col2:
-        st.markdown("### 🛠️ Quick Actions")
-        
-        # Season info
-        max_matches = max([st.session_state.team_stats[team]["P"] for team in VALID_TEAMS]) if st.session_state.team_stats else 0
-        st.metric("📅 Current Season", f"Season {st.session_state.season_number}", 
-                  f"{max_matches}/38 matches")
-        
-        action_col1, action_col2 = st.columns(2)
-        with action_col1:
-            if st.button("🔄 Manual Reset", help="Reset stats for new season", use_container_width=True):
-                reset_league_for_new_season()
-                st.rerun()
-        
-        with action_col2:
-            if st.button("🗑️ Clear All", help="Clear all match data", use_container_width=True):
-                st.session_state.match_data = []
-                reset_league_for_new_season()
-                st.rerun()
+col1, col2 = st.columns([2, 1])
 
-    # Process input data
-    if parse_clicked and raw_input.strip():
-        new_matches, errors, cleaned_lines = clean_and_parse_matches(raw_input)
+with col1:
+    raw_input = st.text_area(
+        "**Paste match data** (with dates/times - will be cleaned automatically)", 
+        height=150,
+        placeholder="Paste your messy data here, e.g.:\nAston V\n1\n2\nSheffield U\nEnglish League WEEK 17 - #2025122312\n3:58 pm\nSouthampton\n2\n0\nEverton\n..."
+    )
+    
+    parse_clicked = st.button("🚀 Parse and Add Matches", type="primary", use_container_width=True)
+
+with col2:
+    st.markdown("### 🛠️ Quick Actions")
+    max_matches = max([st.session_state.team_stats[team]["P"] for team in VALID_TEAMS]) if st.session_state.team_stats else 0
+    st.metric("📅 Current Season", f"Season {st.session_state.season_number}", f"{max_matches}/38 matches")
+    
+    if st.button("🔄 Manual Reset", use_container_width=True):
+        reset_league_for_new_season()
+        st.rerun()
+    
+    if st.button("🗑️ Clear All", use_container_width=True):
+        st.session_state.match_data = []
+        reset_league_for_new_season()
+        st.rerun()
+
+# Process input data
+if parse_clicked and raw_input.strip():
+    new_matches, errors, cleaned_lines = clean_and_parse_matches(raw_input)
+    
+    if errors:
+        st.error(f"❌ Found {len(errors)} parsing errors")
+        for error in errors[:3]:
+            st.write(f"- {error}")
+    
+    if new_matches:
+        needs_reset = False
+        for home_team, home_score, away_score, away_team in new_matches:
+            if st.session_state.team_stats[home_team]["P"] >= 38 or st.session_state.team_stats[away_team]["P"] >= 38:
+                needs_reset = True
+                break
         
-        if errors:
-            st.error(f"❌ Found {len(errors)} parsing errors")
-            for error in errors[:3]:
-                st.write(f"- {error}")
-            if len(errors) > 3:
-                st.write(f"- ... and {len(errors) - 3} more errors")
+        if needs_reset:
+            check_and_reset_season()
         
-        if new_matches:
-            # Check if we need to reset season before adding new matches
-            needs_reset = False
-            for home_team, home_score, away_score, away_team in new_matches:
-                if st.session_state.team_stats[home_team]["P"] >= 38 or st.session_state.team_stats[away_team]["P"] >= 38:
-                    needs_reset = True
-                    break
-            
-            if needs_reset:
+        processed_count = 0
+        for home_team, home_score, away_score, away_team in new_matches:
+            if st.session_state.team_stats[home_team]["P"] >= 38 or st.session_state.team_stats[away_team]["P"] >= 38:
                 check_and_reset_season()
             
-            # Process each match
-            processed_count = 0
-            for home_team, home_score, away_score, away_team in new_matches:
-                # Double-check season reset for each match
-                if st.session_state.team_stats[home_team]["P"] >= 38 or st.session_state.team_stats[away_team]["P"] >= 38:
-                    check_and_reset_season()
-                
-                match_id = st.session_state.match_counter
-                st.session_state.match_counter += 1
-                
-                total_goals = home_score + away_score
-                
-                # Determine Total-G display
-                if total_goals == 4:
-                    total_g_display = "Won"
-                elif total_goals == 3:
-                    total_g_display = "3 ✔"
-                else:
-                    total_g_display = str(total_goals)
-                
-                # Update counters
-                if total_goals == 4:
-                    st.session_state.home_counters[home_team] = 0
-                    st.session_state.away_counters[away_team] = 0
-                    st.session_state.ha_counters[home_team] = 0
-                    st.session_state.ha_counters[away_team] = 0
-                else:
-                    st.session_state.home_counters[home_team] += 1
-                    st.session_state.away_counters[away_team] += 1
-                    st.session_state.ha_counters[home_team] += 1
-                    st.session_state.ha_counters[away_team] += 1
+            match_id = st.session_state.match_counter
+            st.session_state.match_counter += 1
+            
+            total_goals = home_score + away_score
+            total_g_display = "Won" if total_goals == 4 else "3 ✔" if total_goals == 3 else str(total_goals)
+            
+            # Update counters
+            if total_goals == 4:
+                st.session_state.home_counters[home_team] = 0
+                st.session_state.away_counters[away_team] = 0
+                st.session_state.ha_counters[home_team] = 0
+                st.session_state.ha_counters[away_team] = 0
+            else:
+                st.session_state.home_counters[home_team] += 1
+                st.session_state.away_counters[away_team] += 1
+                st.session_state.ha_counters[home_team] += 1
+                st.session_state.ha_counters[away_team] += 1
 
-                if total_goals == 3:
-                    st.session_state.status3_counters[home_team] = 0
-                    st.session_state.status3_counters[away_team] = 0
-                else:
-                    st.session_state.status3_counters[home_team] += 1
-                    st.session_state.status3_counters[away_team] += 1
-                
-                # Update team stats
-                st.session_state.team_stats[home_team]["P"] += 1
-                st.session_state.team_stats[home_team]["GF"] += home_score
-                st.session_state.team_stats[home_team]["GA"] += away_score
-                st.session_state.team_stats[home_team]["GD"] = st.session_state.team_stats[home_team]["GF"] - st.session_state.team_stats[home_team]["GA"]
-                
-                st.session_state.team_stats[away_team]["P"] += 1
-                st.session_state.team_stats[away_team]["GF"] += away_score
-                st.session_state.team_stats[away_team]["GA"] += home_score
-                st.session_state.team_stats[away_team]["GD"] = st.session_state.team_stats[away_team]["GF"] - st.session_state.team_stats[away_team]["GA"]
-                
-                # Update points and results
-                if home_score > away_score:
-                    st.session_state.team_stats[home_team]["W"] += 1
-                    st.session_state.team_stats[home_team]["Pts"] += 3
-                    st.session_state.team_stats[home_team]["Form"].append("W")
-                    
-                    st.session_state.team_stats[away_team]["L"] += 1
-                    st.session_state.team_stats[away_team]["Form"].append("L")
-                    
-                    result = "Home Win"
-                elif away_score > home_score:
-                    st.session_state.team_stats[away_team]["W"] += 1
-                    st.session_state.team_stats[away_team]["Pts"] += 3
-                    st.session_state.team_stats[away_team]["Form"].append("W")
-                    
-                    st.session_state.team_stats[home_team]["L"] += 1
-                    st.session_state.team_stats[home_team]["Form"].append("L")
-                    
-                    result = "Away Win"
-                else:
-                    st.session_state.team_stats[home_team]["D"] += 1
-                    st.session_state.team_stats[home_team]["Pts"] += 1
-                    st.session_state.team_stats[home_team]["Form"].append("D")
-                    
-                    st.session_state.team_stats[away_team]["D"] += 1
-                    st.session_state.team_stats[away_team]["Pts"] += 1
-                    st.session_state.team_stats[away_team]["Form"].append("D")
-                    
-                    result = "Draw"
-                
-                # Keep only last 5 form results
-                if len(st.session_state.team_stats[home_team]["Form"]) > 5:
-                    st.session_state.team_stats[home_team]["Form"].pop(0)
-                if len(st.session_state.team_stats[away_team]["Form"]) > 5:
-                    st.session_state.team_stats[away_team]["Form"].pop(0)
-                
-                # Get current rankings
-                home_rank = get_team_position(home_team)
-                away_rank = get_team_position(away_team)
-                
-                # Generate alert symbols and reason
-                home_f4_alert, home_s3_alert, home_alert_reason = get_alert_symbols_and_reason(
-                    st.session_state.ha_counters[home_team], 
-                    st.session_state.status3_counters[home_team]
-                )
-                away_f4_alert, away_s3_alert, away_alert_reason = get_alert_symbols_and_reason(
-                    st.session_state.ha_counters[away_team], 
-                    st.session_state.status3_counters[away_team]
-                )
-                
-                # Combine alert reasons
-                combined_alert_reason = ""
-                if home_alert_reason or away_alert_reason:
-                    combined_alert_reason = f"{home_team}: {home_alert_reason} | {away_team}: {away_alert_reason}"
-                
-                # Add match data with season info AND ALERTS
-                st.session_state.match_data.append([
-                    match_id, home_team, home_score, away_score, away_team,
-                    total_goals, total_g_display, result,
-                    home_score - away_score,
-                    "Yes" if home_score > 0 and away_score > 0 else "No",
-                    "Over 2.5" if total_goals > 2.5 else "Under 2.5",
-                    home_rank, away_rank,
-                    st.session_state.home_counters[home_team],
-                    st.session_state.away_counters[away_team],
-                    st.session_state.ha_counters[home_team],
-                    st.session_state.ha_counters[away_team],
-                    st.session_state.status3_counters[home_team],
-                    st.session_state.status3_counters[away_team],
-                    f"{home_team}: {st.session_state.ha_counters[home_team]} | {away_team}: {st.session_state.ha_counters[away_team]}",
-                    f"{home_team}: {st.session_state.status3_counters[home_team]} | {away_team}: {st.session_state.status3_counters[away_team]}",
-                    home_f4_alert, home_s3_alert, away_f4_alert, away_s3_alert, combined_alert_reason,  # NEW ALERT COLUMNS
-                    st.session_state.season_number,
-                    f"Season {st.session_state.season_number}"
-                ])
-                
-                processed_count += 1
+            if total_goals == 3:
+                st.session_state.status3_counters[home_team] = 0
+                st.session_state.status3_counters[away_team] = 0
+            else:
+                st.session_state.status3_counters[home_team] += 1
+                st.session_state.status3_counters[away_team] += 1
             
-            st.success(f"✅ Added {processed_count} matches to Season {st.session_state.season_number}")
-            st.rerun()
-        else:
-            st.warning("⚠️ No valid matches found in the input")
-
-    # ============ MAIN DASHBOARD SECTIONS ============
-    if len(st.session_state.match_data) > 0:
-        column_names = [
-            "Match_ID", "Home_Team", "Home_Score", "Away_Score", "Away_Team",
-            "Total_Goals", "Total-G", "Match_Result", "Goal_Difference", 
-            "Both_Teams_Scored", "Over_Under", "Home_Rank", "Away_Rank",
-            "Games_Since_Last_Won_Home", "Games_Since_Last_Won_Away",
-            "Games_Since_Last_Won_Combined_Home", "Games_Since_Last_Won_Combined_Away",
-            "Games_Since_Last_3Goals_Home", "Games_Since_Last_3Goals_Away",
-            "F!=4HA", "Status3",
-            "F4_Alert_Home", "S3_Alert_Home", "F4_Alert_Away", "S3_Alert_Away", "Alert_Reason",  # NEW COLUMNS
-            "Season_Number", "Season_Label"
-        ]
-        
-        df = pd.DataFrame(st.session_state.match_data, columns=column_names)
-        
-        # Divider
-        st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
-        
-        # ============ 2. SEASON DASHBOARD (LEAGUE TABLE) ============
-        st.markdown("<h2 class='section-header'>2. 📊 Season Dashboard</h2>", unsafe_allow_html=True)
-        
-        col_league, col_recent = st.columns([2, 1])
-        
-        with col_league:
-            st.markdown(f"<h3 class='subsection-header'>🏆 Season {st.session_state.season_number} League Table</h3>", unsafe_allow_html=True)
-            rankings = calculate_rankings()
+            # Update team stats
+            st.session_state.team_stats[home_team]["P"] += 1
+            st.session_state.team_stats[home_team]["GF"] += home_score
+            st.session_state.team_stats[home_team]["GA"] += away_score
+            st.session_state.team_stats[home_team]["GD"] = st.session_state.team_stats[home_team]["GF"] - st.session_state.team_stats[home_team]["GA"]
             
-            table_data = []
-            for pos, (team, stats) in enumerate(rankings, 1):
-                table_data.append([
-                    pos, team, stats["P"], stats["W"], stats["D"], stats["L"],
-                    stats["GF"], stats["GA"], stats["GD"], stats["Pts"], 
-                    " ".join(stats["Form"][-5:]) if stats["Form"] else "No matches"
-                ])
+            st.session_state.team_stats[away_team]["P"] += 1
+            st.session_state.team_stats[away_team]["GF"] += away_score
+            st.session_state.team_stats[away_team]["GA"] += home_score
+            st.session_state.team_stats[away_team]["GD"] = st.session_state.team_stats[away_team]["GF"] - st.session_state.team_stats[away_team]["GA"]
             
-            league_df = pd.DataFrame(
-                table_data,
-                columns=["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts", "Form"]
+            # Update points and results
+            if home_score > away_score:
+                st.session_state.team_stats[home_team]["W"] += 1
+                st.session_state.team_stats[home_team]["Pts"] += 3
+                st.session_state.team_stats[home_team]["Form"].append("W")
+                st.session_state.team_stats[away_team]["L"] += 1
+                st.session_state.team_stats[away_team]["Form"].append("L")
+                result = "Home Win"
+            elif away_score > home_score:
+                st.session_state.team_stats[away_team]["W"] += 1
+                st.session_state.team_stats[away_team]["Pts"] += 3
+                st.session_state.team_stats[away_team]["Form"].append("W")
+                st.session_state.team_stats[home_team]["L"] += 1
+                st.session_state.team_stats[home_team]["Form"].append("L")
+                result = "Away Win"
+            else:
+                st.session_state.team_stats[home_team]["D"] += 1
+                st.session_state.team_stats[home_team]["Pts"] += 1
+                st.session_state.team_stats[home_team]["Form"].append("D")
+                st.session_state.team_stats[away_team]["D"] += 1
+                st.session_state.team_stats[away_team]["Pts"] += 1
+                st.session_state.team_stats[away_team]["Form"].append("D")
+                result = "Draw"
+            
+            if len(st.session_state.team_stats[home_team]["Form"]) > 5:
+                st.session_state.team_stats[home_team]["Form"].pop(0)
+            if len(st.session_state.team_stats[away_team]["Form"]) > 5:
+                st.session_state.team_stats[away_team]["Form"].pop(0)
+            
+            home_rank = get_team_position(home_team)
+            away_rank = get_team_position(away_team)
+            
+            # Generate alert symbols
+            home_f4_alert, home_s3_alert, home_alert_reason = get_alert_symbols_and_reason(
+                st.session_state.ha_counters[home_team], 
+                st.session_state.status3_counters[home_team]
+            )
+            away_f4_alert, away_s3_alert, away_alert_reason = get_alert_symbols_and_reason(
+                st.session_state.ha_counters[away_team], 
+                st.session_state.status3_counters[away_team]
             )
             
-            st.dataframe(league_df, use_container_width=True, height=400)
+            combined_alert_reason = ""
+            if home_alert_reason or away_alert_reason:
+                combined_alert_reason = f"{home_team}: {home_alert_reason} | {away_team}: {away_alert_reason}"
             
-            # Quick league insights
-            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem; margin-top: 20px;'>📈 League Insights</h4>", unsafe_allow_html=True)
-            insight_col1, insight_col2, insight_col3, insight_col4 = st.columns(4)
+            # Add match data
+            st.session_state.match_data.append([
+                match_id, home_team, home_score, away_score, away_team,
+                total_goals, total_g_display, result,
+                home_score - away_score,
+                "Yes" if home_score > 0 and away_score > 0 else "No",
+                "Over 2.5" if total_goals > 2.5 else "Under 2.5",
+                home_rank, away_rank,
+                st.session_state.home_counters[home_team],
+                st.session_state.away_counters[away_team],
+                st.session_state.ha_counters[home_team],
+                st.session_state.ha_counters[away_team],
+                st.session_state.status3_counters[home_team],
+                st.session_state.status3_counters[away_team],
+                f"{home_team}: {st.session_state.ha_counters[home_team]} | {away_team}: {st.session_state.ha_counters[away_team]}",
+                f"{home_team}: {st.session_state.status3_counters[home_team]} | {away_team}: {st.session_state.status3_counters[away_team]}",
+                home_f4_alert, home_s3_alert, away_f4_alert, away_s3_alert, combined_alert_reason,
+                st.session_state.season_number,
+                f"Season {st.session_state.season_number}"
+            ])
             
-            with insight_col1:
-                if len(league_df) > 0:
-                    best_attack = league_df.loc[league_df['GF'].idxmax()]
-                    st.metric("Best Attack", best_attack['Team'], f"{best_attack['GF']} GF")
-            
-            with insight_col2:
-                if len(league_df) > 0:
-                    best_defense = league_df.loc[league_df['GA'].idxmin()]
-                    st.metric("Best Defense", best_defense['Team'], f"{best_defense['GA']} GA")
-            
-            with insight_col3:
-                if len(league_df) > 0:
-                    best_gd = league_df.loc[league_df['GD'].idxmax()]
-                    st.metric("Best GD", best_gd['Team'], f"+{best_gd['GD']}")
-            
-            with insight_col4:
-                if len(league_df) > 0:
-                    top_scorer = league_df.loc[league_df['Pts'].idxmax()]
-                    st.metric("League Leader", top_scorer['Team'], f"{top_scorer['Pts']} Pts")
+            processed_count += 1
         
-        with col_recent:
-            st.markdown("<h3 class='subsection-header'>🔄 Recent Match Summary</h3>", unsafe_allow_html=True)
+        st.success(f"✅ Added {processed_count} matches to Season {st.session_state.season_number}")
+        st.rerun()
+    else:
+        st.warning("⚠️ No valid matches found in the input")
+
+st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+
+# 2. 📊 SEASON DASHBOARD (LEAGUE TABLE)
+st.markdown("<h2 class='section-header'>2. 📊 Season Dashboard (League Table)</h2>", unsafe_allow_html=True)
+
+if len(st.session_state.match_data) > 0:
+    column_names = [
+        "Match_ID", "Home_Team", "Home_Score", "Away_Score", "Away_Team",
+        "Total_Goals", "Total-G", "Match_Result", "Goal_Difference", 
+        "Both_Teams_Scored", "Over_Under", "Home_Rank", "Away_Rank",
+        "Games_Since_Last_Won_Home", "Games_Since_Last_Won_Away",
+        "Games_Since_Last_Won_Combined_Home", "Games_Since_Last_Won_Combined_Away",
+        "Games_Since_Last_3Goals_Home", "Games_Since_Last_3Goals_Away",
+        "F!=4HA", "Status3",
+        "F4_Alert_Home", "S3_Alert_Home", "F4_Alert_Away", "S3_Alert_Away", "Alert_Reason",
+        "Season_Number", "Season_Label"
+    ]
+    
+    df = pd.DataFrame(st.session_state.match_data, columns=column_names)
+    
+    col_league, col_recent = st.columns([2, 1])
+    
+    with col_league:
+        st.markdown(f"<h3 style='color: #1E3A8A;'>🏆 Season {st.session_state.season_number} League Table</h3>", unsafe_allow_html=True)
+        rankings = calculate_rankings()
+        
+        table_data = []
+        for pos, (team, stats) in enumerate(rankings, 1):
+            table_data.append([
+                pos, team, stats["P"], stats["W"], stats["D"], stats["L"],
+                stats["GF"], stats["GA"], stats["GD"], stats["Pts"], 
+                " ".join(stats["Form"][-5:]) if stats["Form"] else ""
+            ])
+        
+        league_df = pd.DataFrame(
+            table_data,
+            columns=["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts", "Form"]
+        )
+        
+        st.dataframe(league_df, use_container_width=True, height=400)
+    
+    with col_recent:
+        st.markdown("<h3 style='color: #1E3A8A;'>🔄 Recent Matches</h3>", unsafe_allow_html=True)
+        recent_matches = st.session_state.match_data[-5:] if len(st.session_state.match_data) > 0 else []
+        
+        for match in recent_matches[::-1]:
+            home = match[1]
+            away = match[4]
+            home_score = match[2]
+            away_score = match[3]
             
-            st.markdown("""
-                <div style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color:white; padding:20px; border-radius:15px; margin-bottom: 20px;">
-            """, unsafe_allow_html=True)
-            
-            # Get recent matches (last 10)
-            recent_matches = st.session_state.match_data[-10:] if len(st.session_state.match_data) > 0 else []
-            
-            for match in recent_matches[::-1]:
-                home = match[1]
-                away = match[4]
-                home_score = match[2]
-                away_score = match[3]
-                home_rank = match[11] if len(match) > 11 else "?"
-                away_rank = match[12] if len(match) > 12 else "?"
-                
-                # Color code based on result
-                if home_score > away_score:
-                    home_style = "color: #10B981; font-weight: bold;"
-                    away_style = "color: #EF4444;"
-                elif away_score > home_score:
-                    home_style = "color: #EF4444;"
-                    away_style = "color: #10B981; font-weight: bold;"
-                else:
-                    home_style = away_style = "color: #F59E0B;"
-                
-                st.markdown(
-                    f"<div class='match-row'>"
-                    f"<span style='{home_style}'>{home_rank}. {home}</span> "
-                    f"{home_score}-{away_score} "
-                    f"<span style='{away_style}'>{away} ({away_rank}.)</span>"
-                    f"</div>", 
-                    unsafe_allow_html=True
-                )
-            
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            # Quick stats
-            st.markdown("<h4 style='color: #1E3A8A; font-size: 1.3rem;'>📋 Quick Stats</h4>", unsafe_allow_html=True)
-            total_matches = len(st.session_state.match_data)
-            
-            # Calculate stats for current season only
-            current_season_matches = [m for m in st.session_state.match_data if m[-2] == st.session_state.season_number]
-            current_df = pd.DataFrame(current_season_matches, columns=column_names) if current_season_matches else pd.DataFrame()
-            
-            if len(current_df) > 0:
-                avg_goals = current_df["Total_Goals"].mean()
-                home_wins = len(current_df[current_df["Match_Result"] == "Home Win"])
-                away_wins = len(current_df[current_df["Match_Result"] == "Away Win"])
-                draws = len(current_df[current_df["Match_Result"] == "Draw"])
-                
-                st.metric("Season Matches", len(current_season_matches))
-                st.metric("Avg Goals/Match", round(avg_goals, 2))
-                st.metric("Home/Draw/Away", f"{home_wins}/{draws}/{away_wins}")
+            if home_score > away_score:
+                home_style = "color: #10B981; font-weight: bold;"
+                away_style = "color: #EF4444;"
+            elif away_score > home_score:
+                home_style = "color: #EF4444;"
+                away_style = "color: #10B981; font-weight: bold;"
             else:
-                st.metric("Total Matches", total_matches)
-                st.metric("All-time Matches", total_matches)
-        
-        # Divider
-        st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
-        
-        # ============ 3. COUNTER ALERT DASHBOARD ============
-        st.markdown("<h2 class='section-header'>3. 🚨 Counter Alert Dashboard</h2>", unsafe_allow_html=True)
-        
-        # Show dashboard structure reminder
-        st.markdown("""
-        <div class='alert-info'>
-        <strong>📌 ALERTS ARE HERE!</strong> This section shows Type A alerts for teams with high counters.<br>
-        Click on any warning to see the detailed Type A alert message.
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Get current alerts
-        alerts = check_counter_alerts()
-        
-        # Display critical alerts first
-        if alerts["critical_alerts"]:
-            st.markdown("<h3 class='subsection-header'>🔴 CRITICAL ALERTS (Exceeded Limits)</h3>", unsafe_allow_html=True)
-            for alert in alerts["critical_alerts"]:
-                with st.expander(f"{alert['message']}", expanded=True):
-                    col1, col2 = st.columns([1, 2])
-                    with col1:
-                        st.metric("Current Counter", alert['counter'])
-                        st.metric("Avg Between", f"{alert['avg_between']} matches")
-                    with col2:
-                        st.write(f"**Team:** {alert['team']}")
-                        st.write(f"**Type:** {alert['type']}")
-                        st.write(f"**Hit Rate:** {alert['hit_rate']}% of matches")
-                        if alert['type_a_alert']:
-                            st.success(alert['type_a_alert'])
-        
-        # Display F!=4HA warnings
-        st.markdown(f"<h3 class='subsection-header'>⚠️ F!=4HA Warnings (Counter ≥ {F4_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
-        
-        if alerts["f4_alerts"]:
-            for alert in alerts["f4_alerts"]:
-                with st.expander(f"{alert['message']} - Click to expand for Type A Alert", expanded=False):
-                    col1, col2 = st.columns([1, 2])
-                    with col1:
-                        st.metric("Counter", alert['counter'])
-                        st.metric("Avg Interval", f"{alert['avg_between']} matches")
-                    with col2:
-                        st.write(f"**Team:** {alert['team']}")
-                        st.write(f"**4-goal match rate:** {alert['hit_rate']}% of games")
-                        
-                        # TYPE A ALERT - EXACTLY WHAT YOU WANTED
-                        if alert['type_a_alert']:
-                            st.markdown("---")
-                            st.markdown("### 🎯 **TYPE A ALERT**")
-                            st.success(alert['type_a_alert'])
-                            st.markdown("---")
-                        else:
-                            st.info("No historical data available for Type A prediction")
-        
-            # Progress bars summary
-            for alert in alerts["f4_alerts"]:
-                progress_value = min(1.0, alert['counter'] / 12)
-                st.progress(progress_value, text=f"{alert['team']}: Counter = {alert['counter']}")
-        else:
-            st.info(f"✅ No teams have F!=4HA counters ≥ {F4_ALERT_THRESHOLD}")
-        
-        # Display Status3 warnings
-        st.markdown(f"<h3 class='subsection-header'>🎯 Status3 Warnings (Counter ≥ {S3_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
-        
-        if alerts["s3_alerts"]:
-            for alert in alerts["s3_alerts"]:
-                with st.expander(f"{alert['message']} - Click to expand for Type A Alert", expanded=False):
-                    col1, col2 = st.columns([1, 2])
-                    with col1:
-                        st.metric("Counter", alert['counter'])
-                        st.metric("Avg Interval", f"{alert['avg_between']} matches")
-                    with col2:
-                        st.write(f"**Team:** {alert['team']}")
-                        st.write(f"**3+ goal match rate:** {alert['hit_rate']}% of games")
-                        
-                        # TYPE A ALERT - EXACTLY WHAT YOU WANTED
-                        if alert['type_a_alert']:
-                            st.markdown("---")
-                            st.markdown("### 🎯 **TYPE A ALERT**")
-                            st.success(alert['type_a_alert'])
-                            st.markdown("---")
-                        else:
-                            st.info("No historical data available for Type A prediction")
-        
-            # Progress bars summary
-            for alert in alerts["s3_alerts"]:
-                progress_value = min(1.0, alert['counter'] / 11)
-                st.progress(progress_value, text=f"{alert['team']}: Counter = {alert['counter']}")
-        else:
-            st.info(f"✅ No teams have Status3 counters ≥ {S3_ALERT_THRESHOLD}")
-        
-        # Alert summary
-        st.markdown("<h3 class='subsection-header'>📊 Alert Summary</h3>", unsafe_allow_html=True)
-        summary_col1, summary_col2, summary_col3 = st.columns(3)
-        
-        with summary_col1:
-            st.metric("Critical Alerts", len(alerts["critical_alerts"]))
-        
-        with summary_col2:
-            st.metric("F!=4HA Warnings", len(alerts["f4_alerts"]))
-        
-        with summary_col3:
-            st.metric("Status3 Warnings", len(alerts["s3_alerts"]))
-        
-        # Divider
-        st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
-        
-        # ============ 4. TEAM-SPECIFIC COUNTER ANALYSIS ============
-        st.markdown("<h2 class='section-header'>4. 📊 Team-Specific Counter Analysis</h2>", unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class='alert-info'>
-        <strong>📌 SELECT ANY TEAM</strong> to see their detailed Type A alerts and historical patterns.
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Let user select a team for detailed analysis
-        selected_team = st.selectbox("**Select a team for detailed counter analysis:**", sorted(VALID_TEAMS))
-        
-        if selected_team:
-            patterns = calculate_historical_patterns()
-            pattern = patterns[selected_team]
+                home_style = away_style = "color: #F59E0B;"
             
-            col_analysis1, col_analysis2 = st.columns(2)
+            st.markdown(
+                f"<div style='padding: 10px; margin: 5px 0; border-bottom: 1px solid #E5E7EB;'>"
+                f"<span style='{home_style}'>{home}</span> "
+                f"{home_score}-{away_score} "
+                f"<span style='{away_style}'>{away}</span>"
+                f"</div>", 
+                unsafe_allow_html=True
+            )
+        
+        # Quick stats
+        current_season_matches = [m for m in st.session_state.match_data if m[-2] == st.session_state.season_number]
+        current_df = pd.DataFrame(current_season_matches, columns=column_names) if current_season_matches else pd.DataFrame()
+        
+        if len(current_df) > 0:
+            avg_goals = current_df["Total_Goals"].mean()
+            home_wins = len(current_df[current_df["Match_Result"] == "Home Win"])
+            away_wins = len(current_df[current_df["Match_Result"] == "Away Win"])
+            draws = len(current_df[current_df["Match_Result"] == "Draw"])
             
-            with col_analysis1:
-                st.markdown(f"#### F!=4HA Analysis for {selected_team}")
-                current_f4 = st.session_state.ha_counters[selected_team]
-                st.metric("Current Counter", current_f4)
-                st.metric("Average Interval", f"{pattern['avg_f4_before_reset']} matches")
-                st.metric("Maximum Recorded", pattern['max_f4_counter'])
-                st.metric("Hit Rate", f"{pattern['f4_hit_rate']}%")
-                
-                # TYPE A ALERT DISPLAY
-                st.markdown("#### 🎯 Type A Alert")
-                if pattern['f4_type_a_alert']:
-                    st.success(pattern['f4_type_a_alert'])
-                elif current_f4 >= F4_ALERT_THRESHOLD:
-                    st.warning(f"⚠️ **{selected_team}** has F!=4HA counter at **{current_f4}** but insufficient historical data for Type A prediction.")
-                else:
-                    st.info(pattern['prediction_f4'])
+            st.metric("Season Matches", len(current_season_matches))
+            st.metric("Avg Goals", round(avg_goals, 2))
+            st.metric("Results", f"{home_wins}/{draws}/{away_wins}")
+else:
+    st.info("No matches yet. Add match data above to see the league table.")
+
+st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+
+# 3. 🚨 COUNTER ALERT DASHBOARD - TYPE A ALERTS
+st.markdown("<h2 class='section-header'>3. 🚨 Counter Alert Dashboard ←────── HERE!</h2>", unsafe_allow_html=True)
+
+if len(st.session_state.match_data) > 0:
+    # Get Type A alerts
+    alerts = get_type_a_alerts()
+    
+    # 🔴 CRITICAL ALERTS
+    if alerts["f4_critical"] or alerts["s3_critical"]:
+        st.markdown("<h3 style='color: #EF4444;'>🔴 CRITICAL ALERTS</h3>", unsafe_allow_html=True)
+        
+        # F!=4HA Critical Alerts
+        for alert in alerts["f4_critical"]:
+            st.markdown(f"""
+            <div class='type-a-alert-critical'>
+            {alert['message']}
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Status3 Critical Alerts
+        for alert in alerts["s3_critical"]:
+            st.markdown(f"""
+            <div class='type-a-alert-critical'>
+            {alert['message']}
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # ⚠️ F!=4HA WARNINGS
+    if alerts["f4_warning"]:
+        st.markdown(f"<h3 style='color: #F59E0B;'>⚠️ F!=4HA Warnings (Counter ≥ {F4_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
+        
+        for alert in alerts["f4_warning"]:
+            st.markdown(f"""
+            <div class='type-a-alert'>
+            {alert['message']}
+            </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.info(f"No F!=4HA warnings (counters < {F4_ALERT_THRESHOLD})")
+    
+    # 🎯 Status3 WARNINGS
+    if alerts["s3_warning"]:
+        st.markdown(f"<h3 style='color: #3B82F6;'>🎯 Status3 Warnings (Counter ≥ {S3_ALERT_THRESHOLD})</h3>", unsafe_allow_html=True)
+        
+        for alert in alerts["s3_warning"]:
+            st.markdown(f"""
+            <div class='type-a-alert-status3'>
+            {alert['message']}
+            </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.info(f"No Status3 warnings (counters < {S3_ALERT_THRESHOLD})")
+    
+    # 📊 ALERT SUMMARY
+    st.markdown("<h4 style='color: #1E3A8A;'>📊 Alert Summary</h4>", unsafe_allow_html=True)
+    summary_col1, summary_col2, summary_col3, summary_col4 = st.columns(4)
+    
+    with summary_col1:
+        st.metric("F!=4HA Critical", len(alerts["f4_critical"]))
+    
+    with summary_col2:
+        st.metric("F!=4HA Warnings", len(alerts["f4_warning"]))
+    
+    with summary_col3:
+        st.metric("Status3 Critical", len(alerts["s3_critical"]))
+    
+    with summary_col4:
+        st.metric("Status3 Warnings", len(alerts["s3_warning"]))
+    
+    # Alert settings
+    with st.expander("⚙️ Alert Settings"):
+        st.write(f"**F!=4HA Alerts:** Warning at counter ≥ {F4_ALERT_THRESHOLD}, Critical at ≥ {F4_CRITICAL_THRESHOLD}")
+        st.write(f"**Status3 Alerts:** Warning at counter ≥ {S3_ALERT_THRESHOLD}, Critical at ≥ {S3_CRITICAL_THRESHOLD}")
+        st.write("**Type A Format:** 'Team: Counter = X | Historical: Hits target within next Y matches Z% of time'")
+else:
+    st.info("No match data yet. Type A alerts will appear here when counters reach threshold levels.")
+
+st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+
+# 4. 📊 TEAM-SPECIFIC COUNTER ANALYSIS
+st.markdown("<h2 class='section-header'>4. 📊 Team-Specific Counter Analysis</h2>", unsafe_allow_html=True)
+
+if len(st.session_state.match_data) > 0:
+    selected_team = st.selectbox("Select a team for detailed counter analysis:", sorted(VALID_TEAMS))
+    
+    if selected_team:
+        patterns = calculate_historical_patterns()
+        pattern = patterns[selected_team]
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown(f"#### F!=4HA Analysis for {selected_team}")
+            current_f4 = st.session_state.ha_counters[selected_team]
+            st.metric("Current Counter", current_f4)
+            st.metric("Average Between", f"{pattern['avg_f4_before_reset']} matches")
+            st.metric("4-goal Rate", f"{pattern['f4_hit_rate']}%")
             
-            with col_analysis2:
-                st.markdown(f"#### Status3 Analysis for {
+            if current_f4 >= F4_CRITICAL_THRESHOLD:
+                st.error(f"🔴 CRITICAL: Exceeded {F4_CRITICAL_THRESHOLD} limit!")
+            elif current_f4 >= F4_ALERT_THRESHOLD:
+                st.warning(f"⚠️ WARNING: Counter ≥ {F4_ALERT_THRESHOLD}")
+            else:
+                st.success(f"✅ Normal: Counter < {F4_ALERT_THRESHOLD}")
+        
+        with col2:
+            st.markdown(f"#### Status3 Analysis for {selected_team}")
+            current_s3 = st.session_state.status3_counters[selected_team]
+            st.metric("Current Counter", current_s3)
+            st.metric("Average Between", f"{pattern['avg_s3_before_reset']} matches")
+            st.metric("3+ goal Rate", f"{pattern['s3_hit_rate']}%")
+            
+            if current_s3 >= S3_CRITICAL_THRESHOLD:
+                st.error(f"🔥 CRITICAL: Exceeded {S3_CRITICAL_THRESHOLD} limit!")
+            elif current_s3 >= S3_ALERT_THRESHOLD:
+                st.warning(f"🎯 WARNING: Counter ≥ {S3_ALERT_THRESHOLD}")
+            else:
+                st.success(f"✅ Normal: Counter < {S3_ALERT_THRESHOLD}")
+        
+        # Type A alert for this team
+        st.markdown("#### 🎯 Type A Alert Preview")
+        if current_f4 >= F4_ALERT_THRESHOLD:
+            probability = min(90, max(15, (current_f4 / pattern['avg_f4_before_reset'] * 75))) if pattern['avg_f4_before_reset'] > 0 else 70
+            st.markdown(f"""
+            <div class='type-a-alert'>
+            ⚠️ **{selected_team}**: F!=4HA counter = **{current_f4}** | Historical: Hits 4 goals within next 3 matches **{probability}%** of time
+            </div>
+            """, unsafe_allow_html=True)
+        
+        if current_s3 >= S3_ALERT_THRESHOLD:
+            probability = min(90, max(15, (current_s3 / pattern['avg_s3_before_reset'] * 70))) if pattern['avg_s3_before_reset'] > 0 else 65
+            st.markdown(f"""
+            <div class='type-a-alert-status3'>
+            🎯 **{selected_team}**: Status3 counter = **{current_s3}** | Historical: Hits 3+ goals within next 2 matches **{probability}%** of time
+            </div>
+            """, unsafe_allow_html=True)
+        
+        if current_f4 < F4_ALERT_THRESHOLD and current_s3 < S3_ALERT_THRESHOLD:
+            st.info(f"{selected_team} has no active Type A alerts (counters below threshold)")
+else:
+    st.info("Add match data to see team-specific analysis")
+
+st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+
+# 5. 🎯 MATCH PREDICTOR & ANALYTICS
+st.markdown("<h2 class='section-header'>5. 🎯 Match Predictor & Analytics</h2>", unsafe_allow_html=True)
+
+if len(st.session_state.match_data) > 0:
+    pred_col1, pred_col2 = st.columns(2)
+    
+    with pred_col1:
+        home_team = st.selectbox("**Home Team**", sorted(VALID_TEAMS), key="home_select")
+    
+    with pred_col2:
+        away_team = st.selectbox("**Away Team**", sorted(VALID_TEAMS), key="away_select")
+    
+    if home_team == away_team:
+        st.warning("Please select two different teams")
+    else:
+        st.info(f"Match Prediction: **{home_team}** vs **{away_team}**")
+        
+        # Show counters for both teams
+        col_home, col_away = st.columns(2)
+        
+        with col_home:
+            st.metric(f"{home_team} F!=4HA", st.session_state.ha_counters[home_team])
+            st.metric(f"{home_team} Status3", st.session_state.status3_counters[home_team])
+        
+        with col_away:
+            st.metric(f"{away_team} F!=4HA", st.session_state.ha_counters[away_team])
+            st.metric(f"{away_team} Status3", st.session_state.status3_counters[away_team])
+        
+        # Check if this match might trigger alerts
+        home_f4 = st.session_state.ha_counters[home_team]
+        home_s3 = st.session_state.status3_counters[home_team]
+        away_f4 = st.session_state.ha_counters[away_team]
+        away_s3 = st.session_state.status3_counters[away_team]
+        
+        if home_f4 >= F4_ALERT_THRESHOLD or away_f4 >= F4_ALERT_THRESHOLD:
+            st.warning("⚠️ This match could reset F!=4HA counters (4 goals total)")
+        
+        if home_s3 >= S3_ALERT_THRESHOLD or away_s3 >= S3_ALERT_THRESHOLD:
+            st.info("🎯 This match could reset Status3 counters (3+ goals total)")
+else:
+    st.info("Add match data to use the match predictor")
+
+st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+
+# 6. 💾 DATA MANAGEMENT & EXPORT
+st.markdown("<h2 class='section-header'>6. 💾 Data Management & Export</h2>", unsafe_allow_html=True)
+
+if len(st.session_state.match_data) > 0:
+    exp_col1, exp_col2, exp_col3 = st.columns(3)
+    
+    with exp_col1:
+        csv_full = df.to_csv(index=False)
+        st.download_button(
+            "📋 Download ALL Match Data",
+            data=csv_full,
+            file_name=f"football_data_all_seasons.csv",
+            mime="text/csv",
+            help="Includes ALL matches from ALL seasons with Type A Alerts",
+            use_container_width=True
+        )
+    
+    with exp_col2:
+        current_season_df = df[df["Season_Number"] == st.session_state.season_number]
+        if len(current_season_df) > 0:
+            csv_current = current_season_df.to_csv(index=False)
+            st.download_button(
+                f"🏆 Download Season {st.session_state.season_number} Data",
+                data=csv_current,
+                file_name=f"season_{st.session_state.season_number}_matches.csv",
+                mime="text/csv",
+                help=f"Matches from Season {st.session_state.season_number} only",
+                use_container_width=True
+            )
+    
+    with exp_col3:
+        csv_league = league_df.to_csv(index=False)
+        st.download_button(
+            "📊 Download League Table",
+            data=csv_league,
+            file_name=f"season_{st.session_state.season_number}_league_table.csv",
+            mime="text/csv",
+            help="Current league standings",
+            use_container_width=True
+        )
+    
+    # Current status
+    total_all_time = len(st.session_state.match_data)
+    current_season_count = len([m for m in st.session_state.match_data if m[-2] == st.session_state.season_number])
+    
+    st.info(f"📈 **Data Summary**: {total_all_time} total matches | {current_season_count} in Season {st.session_state.season_number}")
+else:
+    st.info("No data to export yet")
+
+# Footer
+st.markdown("<div class='custom-divider'></div>", unsafe_allow_html=True)
+st.markdown(f"""
+<div style='text-align: center; color: #6B7280; font-size: 0.9em; padding: 20px; margin-top: 30px; border-top: 2px solid #E5E7EB;'>
+⚽ <strong>Football Analytics Dashboard</strong> • Season {st.session_state.season_number} • Type A Alerts Active • F!=4HA≥{F4_ALERT_THRESHOLD}/{F4_CRITICAL_THRESHOLD} • Status3≥{S3_ALERT_THRESHOLD}/{S3_CRITICAL_THRESHOLD}
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)
